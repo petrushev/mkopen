@@ -1,10 +1,9 @@
 from setuptools import setup
 
-setup(name='YourAppName',
+setup(name='MkOpen',
       version='1.0',
-      description='OpenShift App',
-      author='Your Name',
+      description='Open data Macedonia ',
+      author='Baze Petrushev',
       author_email='example@example.com',
       url='http://www.python.org/sigs/distutils-sig/',
-#      install_requires=['Django>=1.3'],
-     )
+    )

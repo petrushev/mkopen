@@ -1,0 +1,9 @@
+{% macro search_box(q, tr) %}
+<div id="search_box" >
+  <form action="/search" method="post" >
+    <input type="input" autocomplete="off" name="q" value="{{q|e}}" />
+    <input type="submit" value="Search" />
+  </form>
+</div>
+{% endmacro %}
+
