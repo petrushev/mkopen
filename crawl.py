@@ -5,7 +5,7 @@ from mkopen.db.mappers import sessionmaker
 
 
 Session = sessionmaker(
-    {'url': 'postgres://%s/%s' % (environ['OPENSHIFT_POSTGRESQL_DB_URL'], environ['PGDATABASE']),
+    {'url': '%s/%s' % (environ['OPENSHIFT_POSTGRESQL_DB_URL'], environ['PGDATABASE']),
      'echo': False})
 
 
