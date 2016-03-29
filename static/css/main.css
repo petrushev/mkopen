@@ -6,3 +6,7 @@ body {
 label {
     font-weight: normal;
 }
+
+.odd {
+    background-color: #f9f9f9;
+}

@@ -2,5 +2,20 @@
 {% import 'macros.html' as macros %}
 
 {% block main %}
+  <div id="last_10" >
+    {% for item in data %}
+      <div class="data_item {% if loop.index % 2 == 1 %} odd {% endif %}" >
+        <p class="small" >
+          {% for cat in (item.catalog_id[:-1]) %}
+            {% set catalog_filter = ( item.catalog_id[:loop.index]|join('/') ) %}
+            <a href="/search?catalog={{url_quote(catalog_filter)}}" >{{cat|e}}</a>
+            {% if not loop.last %}{{'>'}}{% endif %}
+          {% endfor %}
+        </p>
+        <p><a href="/download/{{item.last.id|uuid2b64}}" >{{item.catalog_id[-1]|e}}</a></p>
+
+      </div>
+    {% endfor %}
+  </div>
 
 {% endblock %}

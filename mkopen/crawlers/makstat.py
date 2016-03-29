@@ -73,7 +73,8 @@ def crawl_file(session, file_id, description, cat_path):
 
     metadata = {
         'post_url': url,
-        'category_api_url': START_URL + '/'.join(cat_path)
+        'category_api_url': START_URL + '/'.join(cat_path),
+        'file_type': 'csv'
     }
 
     sleep(random() * 2 + 1.5)

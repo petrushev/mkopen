@@ -10,7 +10,8 @@ from flask.helpers import url_for
 from werkzeug.urls import url_quote, url_quote_plus
 from werkzeug.datastructures import ImmutableMultiDict
 
-from mkopen.views import IndexView, SearchView
+from mkopen.views import IndexView, SearchView, DownloadView
+from mkopen.utils import uuid2b64, is_json
 from mkopen.db.mappers import sessionmaker
 
 
@@ -22,23 +23,9 @@ STATIC_URL_PATH = environ.get('MKOPEN_STATIC_URL_PATH', '/static')
 routes = [
     ('/', IndexView.as_view('home', 'index')),
     ('/search', SearchView.as_view('search', 'index')),
+    ('/download/<string:version_b64>', DownloadView.as_view('download', 'index'))
 ]
 
-def is_json(request):
-    """
-    Indicates if this request is JSON or not.  By default a request
-    is considered to include JSON data if the mimetype is
-    ``application/json`` or ``application/*+json``.
-
-    .. versionadded:: 0.11
-    """
-    # TODO Should be removed once Flask upgrades to 0.11
-    mt = request.mimetype
-    if mt == 'application/json':
-        return True
-    if mt.startswith('application/') and mt.endswith('+json'):
-        return True
-    return False
 
 def error_404(e):
     return render_template('error/404.html'), 404
@@ -47,13 +34,14 @@ def create_app():
     app_ = Flask(__name__, static_url_path=STATIC_URL_PATH)
 
     app_.jinja_env.globals.update(cdn=STATIC_URL_PATH,
-                                 url_for=url_for,
-                                 url_quote=url_quote,
-                                 url_quote_plus=url_quote_plus,
-                                 DATE_FORMAT=DATE_FORMAT,
-                                 NAIVE_DATETIME_FORMAT=NAIVE_DATETIME_FORMAT)
+                                  url_for=url_for,
+                                  url_quote=url_quote,
+                                  url_quote_plus=url_quote_plus,
+                                  DATE_FORMAT=DATE_FORMAT,
+                                  NAIVE_DATETIME_FORMAT=NAIVE_DATETIME_FORMAT)
     app_.jinja_env.filters.update(json=json.dumps,
-                                 domain=lambda url: urlparse(url).netloc)
+                                  domain=lambda url: urlparse(url).netloc,
+                                  uuid2b64=uuid2b64)
 
     for path, view in routes:
         app_.add_url_rule(path, view_func=view)

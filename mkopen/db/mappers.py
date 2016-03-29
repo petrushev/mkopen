@@ -1,5 +1,5 @@
 from sqlalchemy.engine import create_engine
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship, backref, deferred
 
 from mkopen.db import models, reflect
 
@@ -12,7 +12,7 @@ def sessionmaker(dbconfig):
         schema = None
 
     engine = create_engine(conn_str, **dbconfig)
-    mappers, _tables, Session = reflect(engine, models, schema)
+    mappers, tables, Session = reflect(engine, models, schema)
 
     # add mapper relationships
     mappers['Data'].add_properties({
@@ -21,6 +21,10 @@ def sessionmaker(dbconfig):
                                  order_by=models.Version.updated.desc(),
                                  backref=backref('ref',
                                                  lazy='joined'))
+    })
+
+    mappers['Version'].add_properties({
+        'data': deferred(tables['version'].c['data'])
     })
 
     Session.class_.mappers = mappers
