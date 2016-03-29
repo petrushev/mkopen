@@ -1,6 +1,8 @@
 from base64 import b64encode, b64decode
 from binascii import unhexlify, hexlify
 
+from werkzeug.urls import url_encode
+
 def uuid2b64(uuid):
     uuid_ = uuid.replace('-', '')
     b64 = b64encode(unhexlify(uuid_))
@@ -26,3 +28,32 @@ def is_json(request):
     if mt.startswith('application/') and mt.endswith('+json'):
         return True
     return False
+
+
+class SearchQuery(object):
+
+    def __init__(self, query=''):
+        self._parsed = {}
+        for item in query.split('&'):
+            if '=' in item:
+                item = item.split('=')
+                self._parsed[item[0]] = item[1]
+
+    def copy(self):
+        q = SearchQuery()
+        q._parsed = dict(self._parsed)
+        return q
+
+    def __str__(self):
+        return url_encode(self._parsed)
+
+    def set(self, key, val):
+        q = self.copy()
+        q._parsed[key] = val
+        return q
+
+    def delete(self, key):
+        q = self.copy()
+        if key in q._parsed:
+            del q._parsed[key]
+        return q

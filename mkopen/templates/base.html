@@ -63,10 +63,11 @@
     <div class="container">
 
         <div class="row">
-          <form class="col-xs-12 col-sm-12 col-md-6 col-lg-4" role="form" action='/search'>
+          <form class="col-xs-12 col-sm-12 col-md-offset-3 col-md-6 col-lg-offset-4 col-lg-4" role="form" action='/search'>
 
             <div class="input-group" id="search_box">
-              <input type="text" class="form-control" name="search" placeholder="Search...">
+              <input type="text" class="form-control" name="search" placeholder="Search..."
+                {% block search_box_attribs %}{% endblock %} >
               <span class="input-group-btn">
                 <button class="btn btn-default" id="search_submit" type="button">
                   <span class="glyphicon glyphicon-search " aria-hidden="true"></span>

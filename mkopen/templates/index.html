@@ -1,21 +1,57 @@
 {% extends 'extended_base.html' %}
 {% import 'macros.html' as macros %}
 
-{% block main %}
-  <div id="last_10" >
-    {% for item in data %}
-      <div class="data_item {% if loop.index % 2 == 1 %} odd {% endif %}" >
-        <p class="small" >
-          {% for cat in (item.catalog_id[:-1]) %}
-            {% set catalog_filter = ( item.catalog_id[:loop.index]|join('/') ) %}
-            <a href="/search?catalog={{url_quote(catalog_filter)}}" >{{cat|e}}</a>
-            {% if not loop.last %}{{'>'}}{% endif %}
-          {% endfor %}
-        </p>
-        <p><a href="/download/{{item.last.id|uuid2b64}}" >{{item.catalog_id[-1]|e}}</a></p>
+{% block search_box_attribs %}
+ {% if search %}{% if search['query'] %}value="{{search['query']|e}}"{% endif %}{% endif %}
+{% endblock %}
 
+{% block title %}{% if search %}{% if search.query %}Резултати: {{search.query|e}} {% elif search.catalog %} Каталог: {{search['catalog']|join(' > ')}} {% endif %}{% else %}Почетна. {% endif %}- {{super()}}{% endblock %}
+
+{% block meta_desc %}
+  {{super()}}
+  {% if search %}
+    {% if search.query %}
+      Резултати од пребарување: {{search.query|e}}
+    {% endif %}
+    {% if search.catalog %}
+      Каталог: {{search['catalog']|join(' > ')}}
+    {% endif %}
+
+  {% else %}
+    Почетна
+  {% endif %}
+
+{% endblock %}
+
+{% block main %}
+  {% if search %}
+  <div id="search_info" >
+    <p><b>Резултати:</b> {{search['query']|e}} </span>
+    {% if 'catalog' in search %}
+      <p>каталог: {{search['catalog']|join(' > ')}}</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div id="entries" >
+    {% for entry in data %}
+      <div class="data_entry {% if loop.index % 2 == 1 %} odd {% endif %}" >
+        {{macros.data_entry(url_query, entry)}}
       </div>
     {% endfor %}
   </div>
+
+  {% if page %}
+    <nav>
+      <ul class="pager">
+        {% if page > 1 %}
+          <li><a href="/search?{{url_query.set('page', page - 1)}}">Претходни</a></li>
+        {% endif %}
+        {% if not final_page %}
+          <li><a href="/search?{{url_query.set('page', page + 1)}}">Следни</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
 
 {% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'extended_base.html' %}
+{% import 'macros.html' as macros %}
+
+{% block title %}{{entry.catalog_id[-1]|e}} - {{super()}}{% endblock %}
+
+{% block meta_desc %}
+  {{super()}}
+    Прелистување на податочен сет:
+    {{entry.catalog_id[-1]|e}}
+{% endblock %}
+
+{% block main %}
+  <h3>{{entry.catalog_id[-1]|e}}</h3>
+
+  <div class="row">
+
+    <div id="history" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <p>Историја</p>
+      {% for version in versions %}
+        <span>{{ version.updated.strftime(DATE_FORMAT) }}</span>
+        <a href="/download/{{version.id|uuid2b64}}" >
+	      <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+	  </a>
+      {% endfor %}
+    </div>
+
+    <div id="info" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <div class="row" >
+        <p>Каталог</p>
+        {% for cat in (entry.catalog_id[:-1]) %}
+          {% set catalog_filter = ( entry.catalog_id[:loop.index]|join('/') ) %}
+          <a href="/search?catalog={{url_quote(catalog_filter)}}" >{{cat|e}}</a>
+          {% if not loop.last %}{{'>'}}{% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

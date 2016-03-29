@@ -10,7 +10,7 @@ from flask.helpers import url_for
 from werkzeug.urls import url_quote, url_quote_plus
 from werkzeug.datastructures import ImmutableMultiDict
 
-from mkopen.views import IndexView, SearchView, DownloadView
+from mkopen.views import IndexView, SearchView, EntryView
 from mkopen.utils import uuid2b64, is_json
 from mkopen.db.mappers import sessionmaker
 
@@ -23,7 +23,8 @@ STATIC_URL_PATH = environ.get('MKOPEN_STATIC_URL_PATH', '/static')
 routes = [
     ('/', IndexView.as_view('home', 'index')),
     ('/search', SearchView.as_view('search', 'index')),
-    ('/download/<string:version_b64>', DownloadView.as_view('download', 'index'))
+    ('/download/<string:version_b64>', EntryView.as_view('download', 'download')),
+    ('/entry/<string:data_b64>', EntryView.as_view('entry', 'index')),
 ]
 
 

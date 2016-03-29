@@ -2,7 +2,7 @@
 from os import environ
 
 environ.update({
-    'MKOPEN_STATIC_URL_PATH': '//localhost:8000/',
+    'MKOPEN_STATIC_URL_PATH': '//localhost:8000',
     'PGDATABASE': 'opendata',
     'OPENSHIFT_POSTGRESQL_DB_URL': ''
 })
