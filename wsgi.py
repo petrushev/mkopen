@@ -14,4 +14,4 @@ except IOError:
 
 from mkopen.app import create_app
 
-application = create_app
+application = create_app()

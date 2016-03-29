@@ -50,7 +50,7 @@ def create_app():
     app_.errorhandler(404)(error_404)
 
     app_.Session = sessionmaker(
-        {'url': 'postgres://%s/%s' % (environ['OPENSHIFT_POSTGRESQL_DB_URL'], environ['PGDATABASE']),
+        {'url': '%s/%s' % (environ['OPENSHIFT_POSTGRESQL_DB_URL'], environ['PGDATABASE']),
          'echo': False})
 
     @app_.before_request
