@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from os import environ
 
 from flask.views import View
 from flask.wrappers import Response
@@ -13,6 +14,9 @@ from sqlalchemy.sql.expression import func
 
 from mkopen.db.models import Version, Data
 from mkopen.utils import b642uuid, SearchQuery
+
+
+GOOGLE_WEBMASTER = environ.get('GOOGLE_WEBMASTER', None)
 
 
 class ActionView(View):
@@ -58,7 +62,8 @@ class IndexView(ActionView):
                        Data.catalog_id)\
              .limit(15).all()
 
-        self.view['data'] = q
+        self.view.update({'data': q,
+                          'google_webmaster_verifier': GOOGLE_WEBMASTER})
 
         return render_template('index.html', **self.view)
 

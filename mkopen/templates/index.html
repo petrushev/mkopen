@@ -23,6 +23,12 @@
 
 {% endblock %}
 
+{% block head_rest %}
+  {% if google_webmaster_verifier %}
+    <meta name="google-site-verification" content="{{google_webmaster_verifier}}" />
+  {% endif %}
+{% endblock %}
+
 {% block main %}
   {% if search %}
   <div id="search_info" >
