@@ -17,10 +17,15 @@
     <div id="history" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
       <p>Историја</p>
       {% for version in versions %}
-        <span>{{ version.updated.strftime(DATE_FORMAT) }}</span>
-        <a href="/download/{{version.id|uuid2b64}}" >
-	      <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-	  </a>
+        <p>
+          <span>{{ version.updated.strftime(DATE_FORMAT) }}</span>
+          <a href="/download/{{version.id|uuid2b64}}" >
+	        <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+	      </a>
+	      {% if not loop.last %}
+            <a href="/diff/{{version.id|uuid2b64}}" >спореди</a>
+          {% endif %}
+	    </p>
       {% endfor %}
     </div>
 

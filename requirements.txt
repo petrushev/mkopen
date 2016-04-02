@@ -3,3 +3,4 @@ SQLAlchemy>=1.0.0
 requests
 psycopg2
 lxml
+chardet

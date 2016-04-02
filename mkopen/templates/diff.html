@@ -1,0 +1,10 @@
+{% extends 'extended_base.html' %}
+
+{% block basemain %}
+  {{diff_table|safe}}
+{% endblock %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{cdn}}/css/diff.css">
+{% endblock %}

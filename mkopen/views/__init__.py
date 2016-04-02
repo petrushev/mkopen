@@ -14,7 +14,7 @@ from sqlalchemy.sql.operators import op
 from sqlalchemy.sql.expression import func, and_
 
 from mkopen.db.models import Version, Data
-from mkopen.utils import b642uuid, SearchQuery
+from mkopen.utils import b642uuid, SearchQuery, compare
 from operator import itemgetter
 
 
@@ -186,3 +186,18 @@ class EntryView(ActionView):
                      'Content-Disposition': 'attachment; filename="%s%s"' %
                                             (filename, file_ext)})
         return res
+
+
+class DiffView(ActionView):
+
+    def index(self, version_b64):
+        uuid = b642uuid(version_b64)
+        cur_version = Version.load(g.dbsession, id=uuid)
+        entry = cur_version.ref
+        cur_idx = entry.versions.all().index(cur_version)
+        prev_version = entry.versions[cur_idx + 1]
+
+        diff = compare(prev_version.data, cur_version.data)
+        self.view['diff_table'] = diff
+
+        return render_template('diff.html', **self.view)

@@ -10,7 +10,7 @@ from flask.helpers import url_for
 from werkzeug.urls import url_quote, url_quote_plus
 from werkzeug.datastructures import ImmutableMultiDict
 
-from mkopen.views import IndexView, SearchView, EntryView
+from mkopen.views import IndexView, SearchView, EntryView, DiffView
 from mkopen.utils import uuid2b64, is_json
 from mkopen.db.mappers import sessionmaker
 
@@ -25,6 +25,7 @@ routes = [
     ('/search', SearchView.as_view('search', 'index')),
     ('/download/<string:version_b64>', EntryView.as_view('download', 'download')),
     ('/entry/<string:data_b64>', EntryView.as_view('entry', 'index')),
+    ('/diff/<string:version_b64>', DiffView.as_view('diff', 'index')),
 ]
 
 

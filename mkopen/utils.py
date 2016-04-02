@@ -1,7 +1,13 @@
 from base64 import b64encode, b64decode
 from binascii import unhexlify, hexlify
+import difflib
 
 from werkzeug.urls import url_encode
+import chardet
+
+
+diff_fc = difflib.HtmlDiff(wrapcolumn=60).make_table
+
 
 def uuid2b64(uuid):
     uuid_ = uuid.replace('-', '')
@@ -28,6 +34,29 @@ def is_json(request):
     if mt.startswith('application/') and mt.endswith('+json'):
         return True
     return False
+
+
+def compare(data_1, data_2):
+    enc_1 = chardet.detect(data_1)['encoding']
+    enc_2 = chardet.detect(data_2)['encoding']
+    if enc_1 is None and enc_2 is None:
+        # TODO check for pdf
+        return None
+    if enc_1 is None or enc_2 is None:
+        # only one is binary
+        return None
+
+    try:
+        udata_1 = data_1.decode(enc_1)
+        udata_2 = data_2.decode(enc_2)
+    except UnicodeDecodeError:
+        # detected encodings did not work
+        return None
+
+    udata_1 = udata_1.split('\n')
+    udata_2 = udata_2.split('\n')
+
+    return diff_fc(udata_1, udata_2, context=True, numlines=2)
 
 
 class SearchQuery(object):
