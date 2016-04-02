@@ -7,15 +7,18 @@
 </div>
 {% endmacro %}
 
-{% macro data_entry(url_query, entry) %}
+{% macro catalog_crumb(url_query, catalog_id) %}
+<hr style="margin-top: 7px; margin-bottom: 7px;"/>
 <p class="small" >
-  {% for cat in (entry.catalog_id[:-1]) %}
-    {% set catalog_filter = ( entry.catalog_id[:loop.index]|join('/') ) %}
+  {% for cat in catalog_id %}
+    {% set catalog_filter = ( catalog_id[:loop.index]|join('/') ) %}
     <a href="/search?{{url_query.set('catalog', catalog_filter).delete('page')}}" >{{cat|e}}</a>
     {% if not loop.last %}{{'>'}}{% endif %}
   {% endfor %}
 </p>
+{% endmacro %}
 
+{% macro data_entry(url_query, entry) %}
 <p>
   <a href="/entry/{{entry.id|uuid2b64}}"  >{{entry.catalog_id[-1]|e}}</a>
   <span class="small">

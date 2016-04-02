@@ -40,10 +40,13 @@
   {% endif %}
 
   <div id="entries" >
-    {% for entry in data %}
+    {% for catalog_id, entries in data %}
+      <b>{{macros.catalog_crumb(url_query, catalog_id)}}</b>
+      {% for entry in entries %}
       <div class="data_entry {% if loop.index % 2 == 1 %} odd {% endif %}" >
         {{macros.data_entry(url_query, entry)}}
       </div>
+      {% endfor %}
     {% endfor %}
   </div>
 

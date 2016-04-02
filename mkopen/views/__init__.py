@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from os import environ
+from itertools import groupby
 
 from flask.views import View
 from flask.wrappers import Response
@@ -9,15 +10,18 @@ from flask.templating import render_template
 from flask import current_app, request, g
 from werkzeug.exceptions import BadRequest
 from werkzeug.utils import redirect
-from sqlalchemy.sql.operators import op, and_
-from sqlalchemy.sql.expression import func
+from sqlalchemy.sql.operators import op
+from sqlalchemy.sql.expression import func, and_
 
 from mkopen.db.models import Version, Data
 from mkopen.utils import b642uuid, SearchQuery
+from operator import itemgetter
 
 
 GOOGLE_WEBMASTER = environ.get('GOOGLE_WEBMASTER', None)
 
+catalog_id_getter = lambda item: tuple(item[0].catalog_id[:-1])
+itemgetter0, itemgetter1 = itemgetter(0), itemgetter(1)
 
 class ActionView(View):
 
@@ -56,13 +60,27 @@ class ActionView(View):
 class IndexView(ActionView):
 
     def index(self):
-        q = g.dbsession.query(Data)\
-             .join((Version, Version.data_id==Data.id))\
-             .order_by(Version.updated.desc(),
-                       Data.catalog_id)\
-             .limit(15).all()
+        sq = g.dbsession.query(Version.data_id, Version.updated,
+                               func.max(Version.updated).over(partition_by=Version.data_id)\
+                                   .label('max_updated'))\
+              .subquery()
 
-        self.view.update({'data': q,
+        q = g.dbsession.query(Data, sq.c.updated)\
+             .join((sq, and_(sq.c.data_id == Data.id,
+                             sq.c.updated == sq.c.max_updated)))\
+
+        q = q.order_by(sq.c.updated.desc(), Data.catalog_id)\
+             .limit(15)
+
+        data = q.all()
+
+        data.sort(key=catalog_id_getter)
+
+        data2 = [(catalog_id,
+                  map(itemgetter0, sorted(catalog_data, key=itemgetter1, reverse=True)))
+            for catalog_id, catalog_data in groupby(data, key=catalog_id_getter)]
+
+        self.view.update({'data': data2,
                           'google_webmaster_verifier': GOOGLE_WEBMASTER})
 
         return render_template('index.html', **self.view)
@@ -95,8 +113,15 @@ class SearchView(ActionView):
         if filters == []:
             return redirect('/', 302)
 
-        q = g.dbsession.query(Data)\
-             .join((Version, Version.data_id==Data.id))
+        # query data with the last version as sort key
+        sq = g.dbsession.query(Version.data_id, Version.updated,
+                               func.max(Version.updated).over(partition_by=Version.data_id)\
+                                   .label('max_updated'))\
+              .subquery()
+
+        q = g.dbsession.query(Data, sq.c.updated)\
+             .join((sq, and_(sq.c.data_id == Data.id,
+                             sq.c.updated == sq.c.max_updated)))\
 
         # set filters
         if len(filters) > 1:
@@ -104,8 +129,7 @@ class SearchView(ActionView):
         elif len(filters) == 1:
             q = q.filter(filters[0])
 
-        q = q.order_by(Version.updated.desc(),
-                       Data.catalog_id)\
+        q = q.order_by(sq.c.updated.desc(), Data.catalog_id)
 
         # pagination
         try:
@@ -114,11 +138,18 @@ class SearchView(ActionView):
             page = 1
         offset = (page - 1) * 15
 
-        q= q.offset(offset).limit(16).all()
+        data = q.offset(offset).limit(16).all()
 
-        final_page = (len(q) != 16)
+        final_page = (len(data) != 16)
 
-        self.view.update({'data': q,
+        # group by catalog
+        data.sort(key=catalog_id_getter)
+
+        data2 = [(catalog_id,
+                  map(itemgetter0, sorted(catalog_data, key=itemgetter1, reverse=True)))
+            for catalog_id, catalog_data in groupby(data, key=catalog_id_getter)]
+
+        self.view.update({'data': data2,
                           'page': page,
                           'final_page': final_page,
                           'search': search_info})
