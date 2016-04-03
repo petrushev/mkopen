@@ -14,7 +14,7 @@ from sqlalchemy.sql.operators import op
 from sqlalchemy.sql.expression import func, and_
 
 from mkopen.db.models import Version, Data
-from mkopen.utils import b642uuid, SearchQuery, compare
+from mkopen.utils import b642uuid, SearchQuery, compare, uuid2b64
 from operator import itemgetter
 
 
@@ -148,6 +148,12 @@ class SearchView(ActionView):
         data = q.offset(offset).limit(16).all()
 
         final_page = (len(data) != 16)
+
+        # check for single result
+        if page == 1 and len(data) == 1:
+            entry = data[0][0]
+            return redirect('/entry/' + uuid2b64(entry.id))
+
         data = data[:15]
 
         # group by catalog
