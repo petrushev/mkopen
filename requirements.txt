@@ -4,3 +4,4 @@ requests
 psycopg2
 lxml
 chardet
+cssselect
