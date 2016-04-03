@@ -26,6 +26,7 @@ routes = [
     ('/download/<string:version_b64>', EntryView.as_view('download', 'download')),
     ('/entry/<string:data_b64>', EntryView.as_view('entry', 'index')),
     ('/diff/<string:version_b64>', DiffView.as_view('diff', 'index')),
+    ('/robots.txt', IndexView.as_view('robots', 'robots')),
 ]
 
 

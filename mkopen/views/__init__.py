@@ -19,6 +19,10 @@ from operator import itemgetter
 
 
 GOOGLE_WEBMASTER = environ.get('GOOGLE_WEBMASTER', None)
+ROBOTS = """
+User-agent: *
+Disallow: /download/*
+"""
 
 catalog_id_getter = lambda item: tuple(item[0].catalog_id[:-1])
 itemgetter0, itemgetter1 = itemgetter(0), itemgetter(1)
@@ -85,6 +89,9 @@ class IndexView(ActionView):
 
         return render_template('index.html', **self.view)
 
+    def robots(self):
+        return Response(ROBOTS.lstrip(), content_type='text/plain', status=200)
+
 
 class SearchView(ActionView):
 
@@ -141,6 +148,7 @@ class SearchView(ActionView):
         data = q.offset(offset).limit(16).all()
 
         final_page = (len(data) != 16)
+        data = data[:15]
 
         # group by catalog
         data.sort(key=catalog_id_getter)
