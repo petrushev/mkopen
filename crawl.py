@@ -17,6 +17,8 @@ def main():
 
     if crawler_name == 'makstat':
         from mkopen.crawlers.makstat import main as crawler
+    elif crawler_name == 'dksk':
+        from mkopen.crawlers.dksk import main as crawler
 
     else:
         print 'Crawler unknown:', crawler_name
