@@ -9,14 +9,13 @@ from flask.wrappers import Response
 from flask.helpers import make_response
 from flask.templating import render_template
 from flask import current_app, request, g
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.utils import redirect
 from sqlalchemy.sql.operators import op
 from sqlalchemy.sql.expression import func, and_
 
 from mkopen.db.models import Version, Data, combine_catalogs
 from mkopen.utils import b642uuid, SearchQuery, compare, uuid2b64
-
 from mkopen.crawlers.dksk import CATALOG_PREFIX as DKSK_CAT
 from mkopen.crawlers.makstat import CATALOG_PREFIX as MAKSTAT_CAT
 
@@ -25,6 +24,7 @@ GOOGLE_WEBMASTER = environ.get('GOOGLE_WEBMASTER', None)
 ROBOTS = """
 User-agent: *
 Disallow: /download/*
+Disallow: /diff/*
 """
 CATALOGS = (DKSK_CAT, MAKSTAT_CAT)
 
@@ -218,8 +218,13 @@ class DiffView(ActionView):
         uuid = b642uuid(version_b64)
         cur_version = Version.load(g.dbsession, id=uuid)
         entry = cur_version.ref
-        cur_idx = entry.versions.all().index(cur_version)
-        prev_version = entry.versions[cur_idx + 1]
+        versions = entry.versions.all()
+        cur_idx = versions.index(cur_version)
+        try:
+            prev_version = versions[cur_idx + 1]
+        except IndexError:
+            # comparing the first version
+            raise NotFound
 
         diff = compare(prev_version.data, cur_version.data)
         self.view['diff_table'] = diff
