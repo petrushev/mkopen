@@ -21,6 +21,8 @@ from mkopen.crawlers.makstat import CATALOG_PREFIX as MAKSTAT_CAT
 
 
 GOOGLE_WEBMASTER = environ.get('GOOGLE_WEBMASTER', None)
+GOOGLE_WEBMASTER_HTTP = environ.get('GOOGLE_WEBMASTER_HTTP', None)
+
 ROBOTS = """
 User-agent: *
 Disallow: /download/*
@@ -89,8 +91,15 @@ class IndexView(ActionView):
                   map(itemgetter0, sorted(catalog_data, key=itemgetter1, reverse=True)))
             for catalog_id, catalog_data in groupby(data, key=catalog_id_getter)]
 
+        if request.scheme == 'https':
+            google_webmaster = GOOGLE_WEBMASTER
+        elif request.scheme == 'http':
+            google_webmaster = GOOGLE_WEBMASTER_HTTP
+        else:
+            google_webmaster = None
+
         self.view.update({'data': data2,
-                          'google_webmaster_verifier': GOOGLE_WEBMASTER,
+                          'google_webmaster_verifier': google_webmaster,
                           'catalogs': CATALOGS})
 
         return render_template('index.html', **self.view)
