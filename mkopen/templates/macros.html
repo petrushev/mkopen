@@ -8,7 +8,6 @@
 {% endmacro %}
 
 {% macro catalog_crumb(url_query, catalog_id) %}
-<hr style="margin-top: 7px; margin-bottom: 7px;"/>
 <p class="small" >
   {% for cat in catalog_id %}
     {% set catalog_filter = ( catalog_id[:loop.index]|join('/') ) %}
@@ -16,6 +15,7 @@
     {% if not loop.last %}{{'>'}}{% endif %}
   {% endfor %}
 </p>
+<hr style="margin-top: 0px; margin-bottom: 7px;"/>
 {% endmacro %}
 
 {% macro data_entry(url_query, entry) %}

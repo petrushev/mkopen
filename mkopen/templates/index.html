@@ -43,12 +43,14 @@
 
   <div id="entries" class="col-xs-12 col-sm-12 col-md-8 col-lg-9" >
     {% for catalog_id, entries in data %}
+    <div class="catalog_entry {% if loop.index % 2 == 0 %} odd {% endif %}" >
       <b>{{macros.catalog_crumb(url_query, catalog_id)}}</b>
       {% for entry in entries %}
-      <div class="data_entry {% if loop.index % 2 == 1 %} odd {% endif %}" >
+      <div class="data_entry"  >
         {{macros.data_entry(url_query, entry)}}
       </div>
       {% endfor %}
+    </div>
     {% endfor %}
   </div>
 
@@ -60,7 +62,6 @@
         {% set catalog_filter = cat|join('/') %}
         {% set catalog_title = cat|join(' > ')|e %}
         <p><a href="/search?catalog={{url_quote(catalog_filter)}}" title="{{catalog_title}}">{{cat[-1]|e}}</a></p>
-
       {% endfor %}
       </div>
 
