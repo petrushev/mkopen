@@ -10,6 +10,17 @@ def catalog2uuid(catalog_id):
 def data2uuid(data):
     return md5(data).hexdigest()
 
+def combine_catalogs(catalogs):
+    res = set()
+    for catalog in catalogs:
+        for end in range(len(catalog) + 1):
+            part_catalog = catalog[:end]
+            res.add(part_catalog)
+
+    res = list(res)
+    res.sort(key=len)
+    return res
+
 
 class Data(BaseModel):
 

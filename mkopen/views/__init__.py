@@ -2,6 +2,7 @@
 import json
 from os import environ
 from itertools import groupby
+from operator import itemgetter
 
 from flask.views import View
 from flask.wrappers import Response
@@ -13,9 +14,11 @@ from werkzeug.utils import redirect
 from sqlalchemy.sql.operators import op
 from sqlalchemy.sql.expression import func, and_
 
-from mkopen.db.models import Version, Data
+from mkopen.db.models import Version, Data, combine_catalogs
 from mkopen.utils import b642uuid, SearchQuery, compare, uuid2b64
-from operator import itemgetter
+
+from mkopen.crawlers.dksk import CATALOG_PREFIX as DKSK_CAT
+from mkopen.crawlers.makstat import CATALOG_PREFIX as MAKSTAT_CAT
 
 
 GOOGLE_WEBMASTER = environ.get('GOOGLE_WEBMASTER', None)
@@ -23,9 +26,11 @@ ROBOTS = """
 User-agent: *
 Disallow: /download/*
 """
+CATALOGS = (DKSK_CAT, MAKSTAT_CAT)
 
 catalog_id_getter = lambda item: tuple(item[0].catalog_id[:-1])
 itemgetter0, itemgetter1 = itemgetter(0), itemgetter(1)
+
 
 class ActionView(View):
 
@@ -85,7 +90,8 @@ class IndexView(ActionView):
             for catalog_id, catalog_data in groupby(data, key=catalog_id_getter)]
 
         self.view.update({'data': data2,
-                          'google_webmaster_verifier': GOOGLE_WEBMASTER})
+                          'google_webmaster_verifier': GOOGLE_WEBMASTER,
+                          'catalogs': CATALOGS})
 
         return render_template('index.html', **self.view)
 
@@ -163,10 +169,14 @@ class SearchView(ActionView):
                   map(itemgetter0, sorted(catalog_data, key=itemgetter1, reverse=True)))
             for catalog_id, catalog_data in groupby(data, key=catalog_id_getter)]
 
+        # combine catalogs
+        catalogs = combine_catalogs(map(itemgetter0, data2))
+
         self.view.update({'data': data2,
                           'page': page,
                           'final_page': final_page,
-                          'search': search_info})
+                          'search': search_info,
+                          'catalogs': catalogs})
 
         return render_template('index.html', **self.view)
 

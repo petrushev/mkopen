@@ -31,15 +31,17 @@
 
 {% block main %}
   {% if search %}
-  <div id="search_info" >
-    <p><b>Резултати:</b> {{search['query']|e}} </span>
+  <div id="search_info" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" >
+    {% if search['query'] %}
+      <p><b>Резултати:</b> {{search['query']|e}} </span>
+    {% endif %}
     {% if 'catalog' in search %}
-      <p>каталог: {{search['catalog']|join(' > ')}}</p>
+      <p>Каталог: {{search['catalog']|join(' > ')}}</p>
     {% endif %}
   </div>
   {% endif %}
 
-  <div id="entries" >
+  <div id="entries" class="col-xs-12 col-sm-12 col-md-8 col-lg-9" >
     {% for catalog_id, entries in data %}
       <b>{{macros.catalog_crumb(url_query, catalog_id)}}</b>
       {% for entry in entries %}
@@ -50,8 +52,31 @@
     {% endfor %}
   </div>
 
+  <div id="side-nav" class="col-xs-12 col-sm-12 col-md-4 col-lg-3" >
+    {% if search and catalogs %}
+      <p><b>Каталози</b></p>
+      <div id="catalogs" >
+      {% for cat in catalogs %}
+        {% set catalog_filter = cat|join('/') %}
+        {% set catalog_title = cat|join(' > ')|e %}
+        <p><a href="/search?catalog={{url_quote(catalog_filter)}}" title="{{catalog_title}}">{{cat[-1]|e}}</a></p>
+
+      {% endfor %}
+      </div>
+
+    {% elif catalogs %}
+      {# home page #}
+      <p><b>Каталози</b></p>
+      <div id="catalogs" >
+      {% for cat in catalogs %}
+        <p><a href='/search?catalog={{url_quote(cat)}}' >{{cat}}</a></p>
+      {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
   {% if page %}
-    <nav>
+    <nav class="col-xs-12 col-sm-12 col-md-8 col-lg-9">
       <ul class="pager">
         {% if page > 1 %}
           <li><a href="/search?{{url_query.set('page', page - 1)}}">Претходни</a></li>
