@@ -32,6 +32,20 @@ class Data(BaseModel):
     def filename(self):
         return self.catalog_id[-1]
 
+    @property
+    def created(self):
+        first_ver = self.versions.order_by(Version.updated).first()
+        if first_ver is None:
+            return None
+        return first_ver.updated
+
+    @property
+    def modified(self):
+        last_ver = self.last
+        if last_ver is None:
+            return None
+        return last_ver.updated
+
 
 class Version(BaseModel):
     pass
