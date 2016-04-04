@@ -34,10 +34,10 @@ class Data(BaseModel):
 
     @property
     def created(self):
-        first_ver = self.versions.order_by(Version.updated).first()
-        if first_ver is None:
+        versions = self.versions.order_by(Version.updated.desc()).all()
+        if versions == []:
             return None
-        return first_ver.updated
+        return versions[-1].updated
 
     @property
     def modified(self):
