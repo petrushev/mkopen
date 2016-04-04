@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block main %}
-<div itemscope id="entry" itemtype="http://schema.org/Dataset">
+<div itemscope id="entry" itemprop="dataset" itemtype="http://schema.org/Dataset">
   <h3 itemprop="headline">{{entry.catalog_id[-1]|e}}</h3>
 
   {# microdata #}
@@ -51,10 +51,9 @@
     </div>
 
     <div id="info" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-      <div class="row" itemscope itemtype="http://schema.org/DataCatalog" >
+      <div class="row" itemscope itemtype="http://schema.org/DataCatalog" itemref="entry">
         {% set catalog_filter = ( entry.catalog_id[:-1]|join('/') ) %}
-        <meta itemprop="url" content="/search?catalog={{url_quote(catalog_filter)}}" />
-        <meta itemprop="dataset" itemref="entry" />
+        <meta itemprop="url" content="/search?catalog={{catalog_filter}}" />
 
         <p>Каталог</p>
         <span itemprop="headline" >
@@ -64,7 +63,6 @@
           {% if not loop.last %}{{'>'}}{% endif %}
         {% endfor %}
         </span>
-
 
       </div>
     </div>
