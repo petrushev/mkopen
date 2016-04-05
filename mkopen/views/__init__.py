@@ -139,7 +139,7 @@ class SearchView(ActionView):
             return redirect('/', 302)
 
         # look for catalogs
-        cat_q = g.dbsession.query((Data.catalog_id[ 1 : (catalog_depth + 1) ]).distinct())\
+        cat_q = g.dbsession.query((Data.catalog_id[ 1 : func.least(func.array_length(Data.catalog_id, 1) - 1, catalog_depth + 1) ]).distinct())\
                  .filter(*filters).all()
         cat_q = map(tuple, map(itemgetter0, cat_q))
 
