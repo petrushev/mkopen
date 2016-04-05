@@ -21,6 +21,8 @@ def main():
         from mkopen.crawlers.dksk import main as crawler
     elif crawler_name == 'aggregate_dksk':
         from mkopen.crawlers.aggregate_dksk import main as crawler
+    elif crawler_name == 'opendata':
+        from mkopen.crawlers.opendata import main as crawler
 
     else:
         print 'Crawler unknown:', crawler_name

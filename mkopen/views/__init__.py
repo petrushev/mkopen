@@ -16,8 +16,10 @@ from sqlalchemy.sql.expression import func, and_
 
 from mkopen.db.models import Version, Data, combine_catalogs
 from mkopen.utils import b642uuid, SearchQuery, compare, uuid2b64
+
 from mkopen.crawlers.dksk import CATALOG_PREFIX as DKSK_CAT
 from mkopen.crawlers.makstat import CATALOG_PREFIX as MAKSTAT_CAT
+from mkopen.crawlers.opendata import CATALOG_PREFIX as OPENDATA_CAT
 
 
 GOOGLE_WEBMASTER = environ.get('GOOGLE_WEBMASTER', None)
@@ -28,7 +30,7 @@ User-agent: *
 Disallow: /download/*
 Disallow: /diff/*
 """
-CATALOGS = (DKSK_CAT, MAKSTAT_CAT)
+CATALOGS = (DKSK_CAT, MAKSTAT_CAT, OPENDATA_CAT)
 
 catalog_id_getter = lambda item: tuple(item[0].catalog_id[:-1])
 itemgetter0, itemgetter1 = itemgetter(0), itemgetter(1)
