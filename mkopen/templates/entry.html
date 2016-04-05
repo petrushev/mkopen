@@ -51,7 +51,7 @@
     </div>
 
     <div id="info" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-      <div class="row" itemscope itemtype="http://schema.org/DataCatalog" itemref="entry">
+      <div  itemscope itemtype="http://schema.org/DataCatalog" itemref="entry">
         {% set catalog_filter = ( entry.catalog_id[:-1]|join('/') ) %}
         <meta itemprop="url" content="/search?catalog={{catalog_filter}}" />
 
@@ -64,9 +64,23 @@
         {% endfor %}
         </span>
 
-      </div>
-    </div>
+      </div> {# catalog info #}
+
+      {% if entry.last.metadata.file_type == 'csv' %}
+        {% set cols = entry.last.columns() %}
+        {% if cols %}
+          <hr/>
+          <div id="csv_columns" >
+            <p>Колони:</p>
+            <p>{{cols|join(', ')}}</p>
+        {% endif %}
+      {% endif %}
+
+
+    </div> {# info widget #}
 
   </div>
 </div>
+
+
 {% endblock %}

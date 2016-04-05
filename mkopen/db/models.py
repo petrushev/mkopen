@@ -1,5 +1,8 @@
 from hashlib import md5
 
+from sqlalchemy.sql.expression import func, literal
+import chardet
+
 from mkopen.db import BaseModel
 
 
@@ -48,4 +51,32 @@ class Data(BaseModel):
 
 
 class Version(BaseModel):
-    pass
+
+    def preview(self, length=1000):
+        q = self.session(func.substring(Version.data, 1, length)\
+                .filter(Version.id == self.id)).one()
+        return q[0]
+
+    def columns(self):
+        if self.metadata.get('file_type') != 'csv':
+            return None
+        ver_id = self.id
+        first_row = self.session.query(
+            func.substring(
+                Version.data, 1,
+                func.position(literal('\n').op('in')(Version.data))))\
+            .filter(Version.id == ver_id)\
+            .one()[0]
+
+        # try decoding
+        first_row = str(first_row)
+        encoding = chardet.detect(first_row)['encoding']
+        if encoding is None:
+            return None
+        try:
+            first_row = first_row.decode(encoding)
+        except UnicodeDecodeError:
+            return None
+
+        columns = [col.strip(' \'"') for col in first_row.split(',')]
+        return columns
