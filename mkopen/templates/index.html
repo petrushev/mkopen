@@ -61,7 +61,7 @@
       {% for cat in catalogs %}
         {% set catalog_filter = cat|join('/') %}
         {% set catalog_title = cat|join(' > ')|e %}
-        <p><a href="/search?catalog={{url_quote(catalog_filter)}}" title="{{catalog_title}}">{{cat[-1]|e}}</a></p>
+        <p><a href="/search?{{url_query.set('catalog', catalog_filter).delete('page')}}" title="{{catalog_title}}">{{cat[-1]|e}}</a></p>
       {% endfor %}
       </div>
 

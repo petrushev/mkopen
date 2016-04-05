@@ -130,10 +130,20 @@ class SearchView(ActionView):
             search_info['catalog'] = catalog_filter
 
             filters.append(Data.catalog_id.op('@>')(catalog_filter))
+            catalog_depth = len(catalog_filter)
+        else:
+            catalog_depth = 1
 
         # redirect if empty search
         if filters == []:
             return redirect('/', 302)
+
+        # look for catalogs
+        cat_q = g.dbsession.query((Data.catalog_id[ 1 : (catalog_depth + 1) ]).distinct())\
+                 .filter(*filters).all()
+        cat_q = map(tuple, map(itemgetter0, cat_q))
+
+        catalogs = combine_catalogs(cat_q)
 
         # query data with the last version as sort key
         sq = g.dbsession.query(Version.data_id, Version.updated,
@@ -144,12 +154,7 @@ class SearchView(ActionView):
         q = g.dbsession.query(Data, sq.c.updated)\
              .join((sq, and_(sq.c.data_id == Data.id,
                              sq.c.updated == sq.c.max_updated)))\
-
-        # set filters
-        if len(filters) > 1:
-            q = q.filter(*filters)
-        elif len(filters) == 1:
-            q = q.filter(filters[0])
+             .filter(*filters)
 
         q = q.order_by(sq.c.updated.desc(), Data.catalog_id)
 
@@ -177,9 +182,6 @@ class SearchView(ActionView):
         data2 = [(catalog_id,
                   map(itemgetter0, sorted(catalog_data, key=itemgetter1, reverse=True)))
             for catalog_id, catalog_data in groupby(data, key=catalog_id_getter)]
-
-        # combine catalogs
-        catalogs = combine_catalogs(map(itemgetter0, data2))
 
         self.view.update({'data': data2,
                           'page': page,
