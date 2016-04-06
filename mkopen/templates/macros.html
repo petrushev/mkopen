@@ -22,7 +22,7 @@
 <p>
   <a href="/entry/{{entry.id|uuid2b64}}"  >{{entry.catalog_id[-1]|e}}</a>
   <span class="small">
-    [{{entry.last.updated.strftime(DATE_FORMAT)}}]
+    [{{entry.last.updated|date_format}}]
   </span>
   <a href="/download/{{entry.last.id|uuid2b64}}" >
     <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>

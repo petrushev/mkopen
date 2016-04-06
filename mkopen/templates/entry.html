@@ -14,8 +14,8 @@
   <h3 itemprop="headline">{{entry.catalog_id[-1]|e}}</h3>
 
   {# microdata #}
-  <meta itemprop="dateCreated" content="{{entry.created.strftime(DATE_FORMAT)}}" />
-  <meta itemprop="dateModified" content="{{entry.modified.strftime(DATE_FORMAT)}}" />
+  <meta itemprop="dateCreated" content="{{entry.created|date_format}}" />
+  <meta itemprop="dateModified" content="{{entry.modified|date_format}}" />
 
   <div class="row">
 
@@ -23,7 +23,7 @@
       <p>Историја</p>
       {% for version in versions %}
         <p itemprop="distribution" itemscope itemtype="http://schema.org/DataDownload">
-          <span>{{ version.updated.strftime(DATE_FORMAT) }}</span>
+          <span>{{ version.updated|date_format }}</span>
 
           {# microdata #}
           <meta itemprop="contentUrl" content="/download/{{version.id|uuid2b64}}" />

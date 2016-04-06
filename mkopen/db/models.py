@@ -78,5 +78,5 @@ class Version(BaseModel):
         except UnicodeDecodeError:
             return None
 
-        columns = [col.strip(' \'"') for col in first_row.split(',')]
+        columns = [col.strip(' \'"') for col in first_row.replace(';', ',').split(',')]
         return columns

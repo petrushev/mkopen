@@ -1,6 +1,10 @@
 from base64 import b64encode, b64decode
 from binascii import unhexlify, hexlify
 import difflib
+import locale
+import threading
+from contextlib import contextmanager
+
 
 from werkzeug.urls import url_encode
 import chardet
@@ -57,6 +61,22 @@ def compare(data_1, data_2):
     udata_2 = udata_2.split('\n')
 
     return diff_fc(udata_1, udata_2, context=True, numlines=2)
+
+LOCALE_LOCK = threading.Lock()
+
+@contextmanager
+def setlocale(name='mk_MK.UTF-8', locale_part=locale.LC_ALL):
+    with LOCALE_LOCK:
+        saved = locale.setlocale(locale.LC_ALL)
+        try:
+            yield locale.setlocale(locale.LC_ALL, name)
+        finally:
+            locale.setlocale(locale.LC_ALL, saved)
+
+def date_format(date_, format_='%d %B, %Y', locale_name='mk_MK.UTF-8'):
+    with setlocale(locale_name):
+        formated = date_.strftime(format_).decode('utf-8')
+    return formated
 
 
 class SearchQuery(object):
