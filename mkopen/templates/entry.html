@@ -34,15 +34,16 @@
             {% endif %}
           {% endif %}
 
-          <a href="/download/{{version.id|uuid2b64}}" >
-	        <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+          <a href="/download/{{version.id|uuid2b64}}" title="преземи">
 	          {% if version.metadata.file_type %}
 	            .{{version.metadata.file_type|e}}
 	          {% else %}
 	            преземи
 	          {% endif %}
+	        <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
 	        </span>
 	      </a>
+	      <span class="small" title="md5 сума за проверка" >{{version.id.replace('-','')}}</span>
 	      {% if not loop.last %}
             - <a href="/diff/{{version.id|uuid2b64}}" >спореди</a>
           {% endif %}
