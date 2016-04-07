@@ -79,9 +79,9 @@ def save(session, doc_title, source, new_url, content):
         'url': new_url
     }
 
-    url_path = urlparse(new_url).path
-    if '.' in url_path:
-        metadata['file_type'] = url_path.split('.')[1]
+    url_path = urlparse(new_url).path.split('.')
+    if len(url_path) > 1:
+        metadata['file_type'] = url_path[-1]
 
     entry = Data.load(session, id=data_id)
     if entry is None:
