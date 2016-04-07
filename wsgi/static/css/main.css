@@ -10,3 +10,6 @@ label {
 .odd {
     background-color: #f9f9f9;
 }
+
+td {padding-right: 7px;}
+.monofont {font-family: Consolas, Lucida Console, monospace;}

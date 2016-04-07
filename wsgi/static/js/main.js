@@ -31,6 +31,10 @@ function getCachedJson(url, callback) {
     }
 }
 
-$(document).ready(function() {
-
+$(document).ready(function(){
+  $('a.orig_url').click(function(){
+    $(this).hide();
+    $('span#orig_url').show();
+    return false;
+  });
 });

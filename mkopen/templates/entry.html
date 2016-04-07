@@ -11,6 +11,7 @@
 
 {% block main %}
 <div itemscope id="entry" itemprop="dataset" itemtype="http://schema.org/Dataset">
+  {% set last_ver = entry.last %}
   <h3 itemprop="headline">{{entry.catalog_id[-1]|e}}</h3>
 
   {# microdata #}
@@ -21,34 +22,41 @@
 
     <div id="history" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
       <p>Историја</p>
+      <table>
       {% for version in versions %}
-        <p itemprop="distribution" itemscope itemtype="http://schema.org/DataDownload">
-          <span>{{ version.updated|date_format }}</span>
-
+        <tr itemprop="distribution" itemscope itemtype="http://schema.org/DataDownload">
           {# microdata #}
           <meta itemprop="contentUrl" content="/download/{{version.id|uuid2b64}}" />
           <meta itemprop="version" content="{{loop.revindex}}" />
           {% if version.metadata.file_type %}
             {% if version.metadata.file_type == 'csv' %}
-	          <meta itemprop="fileFormat" content="text/csv" />
+            <meta itemprop="fileFormat" content="text/csv" />
             {% endif %}
           {% endif %}
 
-          <a href="/download/{{version.id|uuid2b64}}" title="преземи">
-	          {% if version.metadata.file_type %}
-	            .{{version.metadata.file_type|e}}
-	          {% else %}
-	            преземи
-	          {% endif %}
-	        <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
-	        </span>
-	      </a>
-	      <span class="small" title="md5 сума за проверка" >{{version.id.replace('-','')}}</span>
-	      {% if not loop.last %}
-            - <a href="/diff/{{version.id|uuid2b64}}" >спореди</a>
-          {% endif %}
-	    </p>
+          <td>{{ version.updated|date_format }}</td>
+
+          <td>
+            <a href="/download/{{version.id|uuid2b64}}" title="преземи">
+            <span>
+              {% if version.metadata.file_type %}
+                .{{version.metadata.file_type|e}}
+              {% else %}
+                преземи
+              {% endif %}
+            </span>
+            <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+            </a>
+          </td>
+          <td class="small monofont" title="md5 сума за проверка" >{{version.id.replace('-','')}}</td>
+          <td>
+            {% if not loop.last %}
+              <a href="/diff/{{version.id|uuid2b64}}" >спореди</a>
+            {% endif %}
+          </td>
+        </tr>
       {% endfor %}
+      </table>
     </div>
 
     <div id="info" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
@@ -67,19 +75,28 @@
 
       </div> {# catalog info #}
 
-      {% if entry.last.metadata.file_type == 'csv' %}
-        {% set cols = entry.last.columns() %}
+      {% set original_url = last_ver.metadata.get('url', last_ver.metadata.get('post_url')) %}
+      {% if  original_url %}
+        <hr/>
+        <p>оригинална адреса:
+          <a href="#" class="orig_url" title="{{original_url|e}}" >
+            <span class="small" >{{original_url[:50]|e}}...</span>
+          </a>
+          <span class="small " style="display:none;" id="orig_url">{{original_url|e}}</span>
+        </p>
+      {% endif %} {# original url #}
+
+      {% if last_ver.metadata.file_type == 'csv' %}
+        {% set cols = last_ver.columns() %}
         {% if cols %}
           <hr/>
           <div id="csv_columns" >
             <p>Колони:</p>
             <p>{{cols|join(', ')}}</p>
         {% endif %}
-      {% endif %}
-
+      {% endif %} {# csv columns #}
 
     </div> {# info widget #}
-
   </div>
 </div>
 
