@@ -30,7 +30,7 @@ def crawl_page(url):
 
     section_title = doc.cssselect('#ArticleTitle')
     if len(section_title) == 0:
-        section_title = None
+        section_title = u'Народна банка - останато'
     else:
         section_title = section_title[0].text_content().strip()
 
@@ -44,10 +44,7 @@ def crawl_page(url):
         yield section_title, doc_title, url
 
 def save(session, section, title, url):
-    if section is None:
-        catalog_id = [CATALOG_PREFIX, title]
-    else:
-        catalog_id = [CATALOG_PREFIX, section, title]
+    catalog_id = [CATALOG_PREFIX, section, title]
     data_id = catalog2uuid(catalog_id)
     entry = Data.load(session, id=data_id)
     if entry is None:
