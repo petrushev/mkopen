@@ -7,7 +7,7 @@ from urlparse import urlparse
 from flask import Flask, g, request
 from flask.templating import render_template
 from flask.helpers import url_for
-from werkzeug.urls import url_quote, url_quote_plus
+from werkzeug.urls import url_quote_plus
 from werkzeug.datastructures import ImmutableMultiDict
 
 from mkopen.views import IndexView, SearchView, EntryView, DiffView
@@ -23,6 +23,8 @@ STATIC_URL_PATH = environ.get('MKOPEN_STATIC_URL_PATH', '/static')
 routes = [
     ('/', IndexView.as_view('home', 'index')),
     ('/search', SearchView.as_view('search', 'index')),
+    ('/search/<string:query>', SearchView.as_view('search_query', 'search')),
+    ('/catalog/<path:catalog_id>', SearchView.as_view('catalog', 'catalog')),
     ('/download/<string:version_b64>', EntryView.as_view('download', 'download')),
     ('/entry/<string:data_b64>', EntryView.as_view('entry', 'index')),
     ('/diff/<string:version_b64>', DiffView.as_view('diff', 'index')),
@@ -38,8 +40,7 @@ def create_app():
 
     app_.jinja_env.globals.update(cdn=STATIC_URL_PATH,
                                   url_for=url_for,
-                                  url_quote=url_quote,
-                                  url_quote_plus=url_quote_plus,
+                                  url_quote=url_quote_plus,
                                   DATE_FORMAT=DATE_FORMAT,
                                   NAIVE_DATETIME_FORMAT=NAIVE_DATETIME_FORMAT)
     app_.jinja_env.filters.update(date_format=date_format)

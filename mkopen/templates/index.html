@@ -2,19 +2,19 @@
 {% import 'macros.html' as macros %}
 
 {% block search_box_attribs %}
- {% if search %}{% if search['query'] %}value="{{search['query']|e}}"{% endif %}{% endif %}
+  {% if query %}value="{{query|e}}"{% endif %}
 {% endblock %}
 
-{% block title %}{% if search %}{% if search.query %}Резултати: {{search.query|e}} {% elif search.catalog %} Каталог: {{search['catalog']|join(' > ')}} {% endif %}{% else %}Почетна. {% endif %}- {{super()}}{% endblock %}
+{% block title %}{% if query %}Резултати: {{query|e}} {% elif catalog %}Каталог: {{catalog|join(' > ')}} {% else %}Почетна. {% endif %}- {{super()}}{% endblock %}
 
 {% block meta_desc %}
   {{super()}}
-  {% if search %}
-    {% if search.query %}
-      Резултати од пребарување: {{search.query|e}}
+  {% if query or catalog %}
+    {% if query %}
+      Резултати од пребарување: {{query|e}}
     {% endif %}
-    {% if search.catalog %}
-      Каталог: {{search['catalog']|join(' > ')}}
+    {% if catalog %}
+      Каталог: {{catalog|join(' > ')}}
     {% endif %}
 
   {% else %}
@@ -30,13 +30,13 @@
 {% endblock %}
 
 {% block main %}
-  {% if search %}
+  {% if query or catalog %}
   <div id="search_info" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" >
-    {% if search['query'] %}
-      <p><b>Резултати:</b> {{search['query']|e}} </span>
+    {% if query %}
+      <p><b>Резултати:</b> {{query|e}} </span>
     {% endif %}
-    {% if 'catalog' in search %}
-      <p>Каталог: {{search['catalog']|join(' > ')}}</p>
+    {% if catalog %}
+      <p>Каталог: {{catalog|join(' > ')}}</p>
     {% endif %}
   </div>
   {% endif %}
@@ -44,7 +44,7 @@
   <div id="entries" class="col-xs-12 col-sm-12 col-md-8 col-lg-9" >
     {% for catalog_id, entries in data %}
     <div class="catalog_entry {% if loop.index % 2 == 0 %} odd {% endif %}" >
-      <b>{{macros.catalog_crumb(url_query, catalog_id)}}</b>
+      <b>{{macros.catalog_crumb(url_query, query, catalog_id)}}</b>
       {% for entry in entries %}
       <div class="data_entry"  >
         {{macros.data_entry(url_query, entry)}}
@@ -55,13 +55,11 @@
   </div>
 
   <div id="side-nav" class="col-xs-12 col-sm-12 col-md-4 col-lg-3" >
-    {% if search and catalogs %}
+    {% if (query or catalog) and catalogs %}
       <p><b>Каталози</b></p>
       <div id="catalogs" >
       {% for cat in catalogs %}
-        {% set catalog_filter = cat|join('/') %}
-        {% set catalog_title = cat|join(' > ')|e %}
-        <p><a href="/search?{{url_query.set('catalog', catalog_filter).delete('page')}}" title="{{catalog_title}}">{{cat[-1]|e}}</a></p>
+        <p>{{macros.catalog(url_query, query, cat) }}</p>
       {% endfor %}
       </div>
 
@@ -70,7 +68,7 @@
       <p><b>Каталози</b></p>
       <div id="catalogs" >
       {% for cat in catalogs %}
-        <p><a href='/search?catalog={{url_quote(cat)}}' >{{cat}}</a></p>
+        <p>{{macros.catalog(url_query, query, (cat,)) }}</p>
       {% endfor %}
       </div>
     {% endif %}
@@ -80,10 +78,11 @@
     <nav class="col-xs-12 col-sm-12 col-md-8 col-lg-9">
       <ul class="pager">
         {% if page > 1 %}
-          <li><a href="/search?{{url_query.set('page', page - 1)}}">Претходни</a></li>
+          <li><a href="{{path}}?{{url_query.set('page', page - 1)}}">Претходни</a></li>
         {% endif %}
+        <b>{{page}}
         {% if not final_page %}
-          <li><a href="/search?{{url_query.set('page', page + 1)}}">Следни</a></li>
+          <li><a href="{{path}}?{{url_query.set('page', page + 1)}}">Следни</a></li>
         {% endif %}
       </ul>
     </nav>

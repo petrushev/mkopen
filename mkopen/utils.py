@@ -106,3 +106,7 @@ class SearchQuery(object):
         if key in q._parsed:
             del q._parsed[key]
         return q
+
+    @property
+    def empty(self):
+        return len(self._parsed) > 0

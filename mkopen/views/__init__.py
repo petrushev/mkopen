@@ -11,6 +11,7 @@ from flask.templating import render_template
 from flask import current_app, request, g
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.utils import redirect
+from werkzeug.urls import url_quote_plus
 from sqlalchemy.sql.operators import op
 from sqlalchemy.sql.expression import func, and_
 
@@ -48,8 +49,8 @@ class ActionView(View):
         q = SearchQuery()
         for k, v in request.args.items():
             q = q.set(k, v)
-        self.view = {'url_query': q}
-
+        self.view = {'url_query': q,
+                     'path': request.path}
 
     def dispatch_request(self, *args, **kwargs):
         action_fc = getattr(self, self.action, None)
@@ -104,7 +105,9 @@ class IndexView(ActionView):
 
         self.view.update({'data': data2,
                           'google_webmaster_verifier': google_webmaster,
-                          'catalogs': CATALOGS})
+                          'catalogs': CATALOGS,
+                          'query': None,
+                          'catalog': None})
 
         return render_template('index.html', **self.view)
 
@@ -115,23 +118,55 @@ class IndexView(ActionView):
 class SearchView(ActionView):
 
     def index(self):
+        query, catalog = None, None
+        if 'search' in request.args:
+            query = request.args['search'].strip()
+            if query == '':
+                query = None
+        if 'catalog' in request.args:
+            catalog = request.args['catalog'].strip()
+            if catalog == '':
+                catalog = None
+
+        if query is not None:
+            url = '/search/' + url_quote_plus(query)
+            if catalog is not None:
+                url = url + '?catalog=' + url_quote_plus(catalog)
+            return redirect(url, 301)
+
+        if catalog is not None:
+            url = '/catalog/' + catalog
+            #url = '/catalog/' + '/'.join(map(url_quote_plus, catalog.split('/')))
+            return redirect(url, 301)
+
+        return redirect('/', 302)
+
+    def search(self, query):
+        catalog = None
+        if 'catalog' in request.args:
+            catalog = request.args['catalog'].strip()
+            if catalog == '':
+                catalog = None
+
+        return self._search(query, catalog)
+
+    def catalog(self, catalog_id):
+        return self._search(None, catalog_id)
+
+    def _search(self, query, catalog):
         # build filters
         filters = []
-        search_info = {}
 
-        if 'search' in request.args:
-            query_arg = request.args['search']
-            search_info['query'] = query_arg
-            for query_part in query_arg.split(' '):
+        if query is not None:
+            for query_part in query.split(' '):
                 if query_part == '':
                     continue
                 query_filter = func.join_text_array(Data.catalog_id, ' ')\
                                    .ilike('%%%s%%' % query_part)
                 filters.append(query_filter)
 
-        if 'catalog' in request.args:
-            catalog_filter = request.args['catalog'].split('/')
-            search_info['catalog'] = catalog_filter
+        if catalog is not None:
+            catalog_filter = catalog.split('/')
 
             filters.append(Data.catalog_id.op('@>')(catalog_filter))
             catalog_depth = len(catalog_filter)
@@ -190,8 +225,10 @@ class SearchView(ActionView):
         self.view.update({'data': data2,
                           'page': page,
                           'final_page': final_page,
-                          'search': search_info,
-                          'catalogs': catalogs})
+                          'catalogs': catalogs,
+                          'query': query})
+        if catalog is not None:
+            self.view['catalog'] = catalog.split('/')
 
         return render_template('index.html', **self.view)
 
