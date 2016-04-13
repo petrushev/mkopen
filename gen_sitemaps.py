@@ -5,7 +5,6 @@ from os.path import dirname
 from sqlalchemy.sql.expression import func
 from lxml.etree import Element, SubElement
 from lxml.etree import tostring as xml_to_string
-from werkzeug.urls import url_quote
 
 from mkopen.utils import uuid2b64
 from mkopen.db.mappers import sessionmaker
@@ -31,14 +30,32 @@ def gen_catalogs(session):
     len_ = func.array_length(Data.catalog_id, 1)
     q = session.query((Data.catalog_id[ 1 : len_ - 1 ]).distinct()).all()
 
+
+    all_catalogs = set()
+
     for row in q:
-        catalog_param = '/'.join(row[0])
+        full_cat = row[0]
+
+        for i in range(len(full_cat) + 1):
+            catalog_param = '/'.join(full_cat[:i])
+            all_catalogs.add(catalog_param)
+
+    all_catalogs.remove('')
+
+    for catalog_param in all_catalogs:
         url_xml = SubElement(doc, "url")
         SubElement(url_xml, 'loc').text = \
-           'https://%s/search?catalog=%s' % (environ['OPENSHIFT_APP_DNS'],
-                                             url_quote(catalog_param))
+           'https://%s/catalog/%s' % (environ['OPENSHIFT_APP_DNS'],
+                                      catalog_param)
         SubElement(url_xml, 'changefreq').text = 'weekly'
-        SubElement(url_xml, 'priority').text = '0.8'
+        SubElement(url_xml, 'priority').text = '0.7'
+
+    # index
+    url_xml = SubElement(doc, "url")
+    SubElement(url_xml, 'loc').text = 'https://%s' % (environ['OPENSHIFT_APP_DNS'],)
+    SubElement(url_xml, 'changefreq').text = 'daily'
+    SubElement(url_xml, 'priority').text = '0.9'
+
 
     with open(path_join(SITEMAP_PATH, 'catalog.xml'), 'wb') as f:
         f.write(xml_to_string(doc, encoding='utf-8', pretty_print=True))
@@ -48,14 +65,14 @@ def gen_entries(session):
 
     entries = session.query(Data.id).all()
     for entry in entries:
-        hash = uuid2b64(entry.id)
+        hash_ = uuid2b64(entry.id)
 
         url_xml = SubElement(doc, "url")
         SubElement(url_xml, 'loc').text = \
            'https://%s/entry/%s' % (environ['OPENSHIFT_APP_DNS'],
-                                    hash)
+                                    hash_)
         SubElement(url_xml, 'changefreq').text = 'weekly'
-        SubElement(url_xml, 'priority').text = '0.9'
+        SubElement(url_xml, 'priority').text = '0.8'
 
     with open(path_join(SITEMAP_PATH, 'entries.xml'), 'wb') as f:
         f.write(xml_to_string(doc, encoding='utf-8', pretty_print=True))
