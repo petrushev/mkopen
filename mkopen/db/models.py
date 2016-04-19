@@ -20,6 +20,9 @@ def combine_catalogs(catalogs):
             part_catalog = catalog[:end]
             res.add(part_catalog)
 
+    if tuple() in res:
+        res.remove(tuple())
+
     res = list(res)
     res.sort(key=len)
     return res
