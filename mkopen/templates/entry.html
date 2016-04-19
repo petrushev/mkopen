@@ -66,15 +66,20 @@
         <meta itemprop="url" content="/catalog/{{catalog_filter}}" />
 
         <p>Каталог на отворени податоци</p>
-        <span itemprop="headline" >
+        <p itemprop="headline" >
         {% for cat in (entry.catalog_id[:-1]) %}
           {% set catalog_filter = ( entry.catalog_id[:loop.index]|join('/') ) %}
           <a href="/search?catalog={{url_quote(catalog_filter)}}" >{{cat|e}}</a>
           {% if not loop.last %}{{'>'}}{% endif %}
         {% endfor %}
-        </span>
+        </p>
 
       </div> {# catalog info #}
+      <div id="catalog_info" >
+        <p>
+          {{ macros.catalog_desc(entry.catalog_id) }}
+        </p>
+      </div>
 
       {% set original_url = last_ver.metadata.get('url', last_ver.metadata.get('post_url')) %}
       {% if  original_url %}

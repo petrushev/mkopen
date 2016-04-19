@@ -43,3 +43,9 @@
   </a>
 </p>
 {% endmacro %}
+
+{% macro catalog_desc(catalog) %}
+  {% if catalog[0] == "Државна комисија за спречување корупција" %}
+    Анкетни листови
+  {% endif %}
+{% endmacro %}
