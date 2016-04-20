@@ -16,14 +16,18 @@
   {% if query %}value="{{query|e}}"{% endif %}
 {% endblock %}
 
-{% block search_info %}
-  <div id="search_info" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" >
-    {% if query %}
-      <p><b>Резултати:</b> {{query|e}} </span>
-    {% endif %}
-    {% if catalog %}
-      <p>Каталог: {{catalog|join(' > ')}}</p>
-    {% endif %}
+{% block headline %}
+  <div class="row" id="headline " >
+    <div class="panel panel-info col-xs-12 col-sm-12 col-md-12 col-lg-12"">
+      <div class="panel-body">
+      {% if query %}
+	      <p><b>Резултати:</b> {{query|e}} </span>
+	  {% endif %}
+      {% if catalog %}
+	      <p>Каталог: {{catalog|join(' > ')}}</p>
+	  {% endif %}
+      </div>
+    </div>
   </div>
 {% endblock %}
 
