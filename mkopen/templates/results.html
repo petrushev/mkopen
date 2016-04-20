@@ -4,17 +4,20 @@
 {% block main %}
   {% block search_info %}{% endblock %}
 
-  <div id="entries" class="col-xs-12 col-sm-12 col-md-8 col-lg-9" >
-    {% for catalog_id, entries in data %}
-    <div class="catalog_entry {% if loop.index % 2 == 0 %} odd {% endif %}" >
-      <b>{{macros.catalog_crumb(url_query, query, catalog_id)}}</b>
-      {% for entry in entries %}
-      <div class="data_entry"  >
-        {{macros.data_entry(url_query, entry)}}
-      </div>
-      {% endfor %}
+  <div id="left_main" class="col-xs-12 col-sm-12 col-md-8 col-lg-9" >
+    {% block headline %}{% endblock %}
+    <div id="entries" >
+       {% for catalog_id, entries in data %}
+	    <div class="catalog_entry {% if loop.index % 2 == 0 %} odd {% endif %}" >
+	      <b>{{macros.catalog_crumb(url_query, query, catalog_id)}}</b>
+	      {% for entry in entries %}
+	      <div class="data_entry"  >
+	        {{macros.data_entry(url_query, entry)}}
+	      </div>
+	      {% endfor %}
+	    </div>
+	  {% endfor %}
     </div>
-    {% endfor %}
   </div>
 
   <div id="side-nav" class="col-xs-12 col-sm-12 col-md-4 col-lg-3" >

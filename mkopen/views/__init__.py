@@ -103,11 +103,17 @@ class IndexView(ActionView):
         else:
             google_webmaster = None
 
+        # stats
+        total_datasets = g.dbsession.query(func.count(Data.id)).one()[0]
+        last_update = g.dbsession.query(func.max(Version.updated)).one()[0]
+
         self.view.update({'data': data2,
                           'google_webmaster_verifier': google_webmaster,
                           'catalogs': CATALOGS,
                           'query': None,
-                          'catalog': None})
+                          'catalog': None,
+                          'total_datasets': total_datasets,
+                          'last_update': last_update})
 
         return render_template('index.html', **self.view)
 

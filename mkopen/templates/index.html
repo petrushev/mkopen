@@ -18,3 +18,18 @@
     <p>{{macros.catalog(url_query, query, (cat,)) }}</p>
   {% endfor %}
 {% endblock %}
+
+{% block headline %}
+  <div class="row" id="headline " >
+    <div class="panel panel-info col-xs-12 col-sm-12 col-md-5 col-lg-5"">
+      <div class="panel-body">
+        Последно ажурирање: {{last_update|date_format}}
+      </div>
+    </div>
+    <div class="panel panel-info col-xs-12 col-sm-12 col-md-offset-1 col-md-5 col-lg-offset-1 col-lg-5"">
+      <div class="panel-body">
+        Вкупно {{total_datasets }} податочни сетови
+      </div>
+    </div>
+  </div>
+{% endblock %}
