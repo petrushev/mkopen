@@ -1,10 +1,34 @@
-{% extends 'base.html' %}
+{% extends 'results.html' %}
 
-{% block main %}
-  {% block top_main %}
-  {% endblock %}
+{% block title %}{% if query %}Резултати: {{query|e}}{% elif catalog %}Каталог: {{catalog|join(' > ')}}{% endif %} - {{super()}}{% endblock %}
 
-  <div class="row">
- 
+{% block meta_desc %}
+  {{super()}}
+    {% if query %}
+      Резултати од пребарување: {{query|e}}
+    {% endif %}
+    {% if catalog %}
+      Каталог: {{catalog|join(' > ')}}
+    {% endif %}
+{% endblock %}
+
+{% block search_box_attribs %}
+  {% if query %}value="{{query|e}}"{% endif %}
+{% endblock %}
+
+{% block search_info %}
+  <div id="search_info" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" >
+    {% if query %}
+      <p><b>Резултати:</b> {{query|e}} </span>
+    {% endif %}
+    {% if catalog %}
+      <p>Каталог: {{catalog|join(' > ')}}</p>
+    {% endif %}
   </div>
+{% endblock %}
+
+{% block side_nav_catalogs %}
+  {% for cat in catalogs %}
+    <p>{{macros.catalog(url_query, query, cat) }}</p>
+  {% endfor %}
 {% endblock %}

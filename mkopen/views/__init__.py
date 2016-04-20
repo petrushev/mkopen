@@ -230,7 +230,7 @@ class SearchView(ActionView):
         if catalog is not None:
             self.view['catalog'] = catalog.split('/')
 
-        return render_template('index.html', **self.view)
+        return render_template('search.html', **self.view)
 
 
 class EntryView(ActionView):

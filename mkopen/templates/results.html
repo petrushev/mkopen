@@ -1,0 +1,41 @@
+{% extends 'extended_base.html' %}
+{% import 'macros.html' as macros %}
+
+{% block main %}
+  {% block search_info %}{% endblock %}
+
+  <div id="entries" class="col-xs-12 col-sm-12 col-md-8 col-lg-9" >
+    {% for catalog_id, entries in data %}
+    <div class="catalog_entry {% if loop.index % 2 == 0 %} odd {% endif %}" >
+      <b>{{macros.catalog_crumb(url_query, query, catalog_id)}}</b>
+      {% for entry in entries %}
+      <div class="data_entry"  >
+        {{macros.data_entry(url_query, entry)}}
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div id="side-nav" class="col-xs-12 col-sm-12 col-md-4 col-lg-3" >
+    <p><b>Каталози</b></p>
+    <div id="catalogs" >
+      {% block side_nav_catalogs %}{% endblock %}
+    </div>
+  </div>
+
+  {% if page %}
+    <nav class="col-xs-12 col-sm-12 col-md-8 col-lg-9">
+      <ul class="pager">
+        {% if page > 1 %}
+          <li><a href="{{path}}?{{url_query.set('page', page - 1)}}">Претходни</a></li>
+        {% endif %}
+        <b>{{page}}
+        {% if not final_page %}
+          <li><a href="{{path}}?{{url_query.set('page', page + 1)}}">Следни</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+
+{% endblock %}
