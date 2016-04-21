@@ -5,11 +5,11 @@ from itertools import groupby
 from operator import itemgetter
 
 from flask.views import View
-from flask.wrappers import Response
 from flask.helpers import make_response
 from flask.templating import render_template
 from flask import current_app, request, g
 from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.wrappers import Response
 from werkzeug.utils import redirect
 from werkzeug.urls import url_quote_plus
 from sqlalchemy.sql.operators import op

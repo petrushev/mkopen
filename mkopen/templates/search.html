@@ -36,3 +36,17 @@
     <p>{{macros.catalog(url_query, query, cat) }}</p>
   {% endfor %}
 {% endblock %}
+
+{% block pager %}
+    <nav class="col-xs-12 col-sm-12 col-md-8 col-lg-9">
+      <ul class="pager">
+        {% if page > 1 %}
+          <li><a href="{{path}}?{{url_query.set('page', page - 1)}}">Претходни</a></li>
+        {% endif %}
+        <b>{{page}}</b>
+        {% if not final_page %}
+          <li><a href="{{path}}?{{url_query.set('page', page + 1)}}">Следни</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+{% endblock %}
