@@ -11,7 +11,7 @@ from flask import current_app, request, g
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.wrappers import Response
 from werkzeug.utils import redirect
-from werkzeug.urls import url_quote_plus
+from werkzeug.urls import url_quote_plus, url_quote
 from sqlalchemy.sql.operators import op
 from sqlalchemy.sql.expression import func, and_
 
@@ -135,9 +135,9 @@ class SearchView(ActionView):
                 catalog = None
 
         if query is not None:
-            url = '/search/' + url_quote_plus(query)
+            url = '/search/' + url_quote(query)
             if catalog is not None:
-                url = url + '?catalog=' + url_quote_plus(catalog)
+                url = url + '?catalog=' + url_quote(catalog)
             return redirect(url, 301)
 
         if catalog is not None:
