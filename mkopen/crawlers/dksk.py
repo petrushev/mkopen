@@ -81,6 +81,13 @@ def crawl_details(url):
     csv_content = csv_handle.getvalue()
     csv_handle.close()
 
+    # resort data
+    csv_content = csv_content.split('\n')
+    csv_header = csv_content.pop(0)
+    csv_content.sort()
+    csv_content.insert(0, csv_header)
+    csv_content = '\n'.join(csv_content)
+
     return definer, csv_content
 
 def save(session, catalog_id, data, metadata):
