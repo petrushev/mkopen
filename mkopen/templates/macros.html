@@ -34,7 +34,7 @@
 
 {% macro data_entry(url_query, entry) %}
 <p>
-  <a href="/entry/{{entry.id|uuid2b64}}" itemprop="headline" >{{entry.catalog_id[-1]|e}}</a>
+  <a href="/entry/{{entry.id|uuid2b64}}" ><span itemprop="headline" >{{entry.catalog_id[-1]|e}}</span></a>
   <meta itemprop="url" content="/entry/{{entry.id|uuid2b64}}">
   <meta itemprop="dateModified" content="{{entry.last.updated.strftime(DATE_FORMAT)}}">
   <span class="small">
