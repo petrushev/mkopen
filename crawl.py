@@ -27,6 +27,8 @@ def main():
         from mkopen.crawlers.opendata_ext import main as crawler
     elif crawler_name == 'nbrm':
         from mkopen.crawlers.nbrm import main as crawler
+    elif crawler_name == 'skopje2014':
+        from mkopen.crawlers.skopje2014 import main as crawler
 
     else:
         print 'Crawler unknown:', crawler_name
