@@ -51,7 +51,7 @@ def crawl(inv, writer1, writer2):
     sleep(random() + 0.5)
 
     url = 'http://skopje2014.prizma.birn.eu.com/mk/rezultati/inv=%d' % inv
-    content = rq.get(url).content
+    content = rq.get(url).content.decode('utf-8')
     doc = fromstring(content)
 
     investor = doc.cssselect('ul#ulInvestitori')[0].cssselect('li')[0].text_content().strip()
