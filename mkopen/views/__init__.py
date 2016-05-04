@@ -14,6 +14,7 @@ from werkzeug.utils import redirect
 from werkzeug.urls import url_quote_plus, url_quote
 from sqlalchemy.sql.operators import op
 from sqlalchemy.sql.expression import func, and_
+import chardet
 
 from mkopen.db.models import Version, Data, combine_catalogs
 from mkopen.utils import b642uuid, SearchQuery, compare, uuid2b64
@@ -248,9 +249,45 @@ class EntryView(ActionView):
 
         versions = entry.versions.order_by(Version.updated.desc()).all()
 
+        # load preview
+        last = versions[0]
+        preview_data, is_preview_full = self._load_preview(last)
+        if preview_data is not None:
+            self.view.update({'preview': preview_data,
+                              'is_preview_full': is_preview_full})
+
         self.view.update({'entry': entry, 'versions': versions})
 
         return render_template('entry.html', **self.view)
+
+    def _load_preview(self, version):
+        if version.metadata['file_type'] != 'csv':
+            return None, None
+
+        preview_data = g.dbsession.query(func.substring(Version.data, 1, 13000),
+                                         func.length(Version.data))\
+                        .filter(Version.id==version.id).one()
+        preview_data, version_length = preview_data
+        preview_data = str(preview_data)
+
+        is_preview_full = ( len(preview_data) == version_length )
+
+        if not is_preview_full:
+            last_return = preview_data.rindex('\n')
+            preview_data = preview_data[:last_return]
+
+        encoding = chardet.detect(preview_data)['encoding']
+        if encoding is None:
+            return None, None
+
+        try:
+            preview_data = preview_data.decode(encoding)
+        except UnicodeDecodeError:
+            return None, None
+
+        preview_data = preview_data.strip().split('\n')
+
+        return preview_data, is_preview_full
 
     def download(self, version_b64):
         uuid = b642uuid(version_b64)

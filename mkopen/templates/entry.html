@@ -92,18 +92,19 @@
         </p>
       {% endif %} {# original url #}
 
-      {% if last_ver.metadata.file_type == 'csv' %}
-        {% set cols = last_ver.columns() %}
-        {% if cols %}
-          <hr/>
-          <div id="csv_columns" >
-            <p>Колони:</p>
-            <p>{{cols|join(', ')}}</p>
-        {% endif %}
-      {% endif %} {# csv columns #}
+    </div>
+  </div>{# info widget #}
 
-    </div> {# info widget #}
-  </div>
+    {% if preview %}
+    <div id="info" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <hr/>
+      <p>Преглед:</p>
+      {% for line in preview %}
+        <p class="small">{{line|e}}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
 </div>
 
 
