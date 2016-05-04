@@ -18,7 +18,6 @@ def sessionmaker(dbconfig):
     mappers['Data'].add_properties({
         'versions': relationship(models.Version,
                                  lazy='dynamic',
-                                 order_by=models.Version.updated.desc(),
                                  backref=backref('ref',
                                                  lazy='joined'))
     })

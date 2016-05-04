@@ -246,7 +246,7 @@ class EntryView(ActionView):
         uuid = b642uuid(data_b64)
         entry = Data.load(g.dbsession, id=uuid)
 
-        versions = entry.versions.all()
+        versions = entry.versions.order_by(Version.updated.desc()).all()
 
         self.view.update({'entry': entry, 'versions': versions})
 
@@ -277,7 +277,7 @@ class DiffView(ActionView):
         uuid = b642uuid(version_b64)
         cur_version = Version.load(g.dbsession, id=uuid)
         entry = cur_version.ref
-        versions = entry.versions.all()
+        versions = entry.versions.order_by(Version.updated.desc()).all()
         cur_idx = versions.index(cur_version)
         try:
             prev_version = versions[cur_idx + 1]
