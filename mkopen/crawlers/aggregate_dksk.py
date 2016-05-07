@@ -53,8 +53,8 @@ def extract_entry(writer_csv, entry):
 
     data_csv = csv.reader(reader_hnd)
     for row_id, row in enumerate(data_csv):
-        # skip header
-        if row_id == 0:
+        # skip header and empty
+        if row_id == 0 or row == []:
             continue
 
         full_row = row_prefix + row
