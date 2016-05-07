@@ -285,6 +285,7 @@ class EntryView(ActionView):
         except UnicodeDecodeError:
             return None, None
 
+        preview_data = preview_data.replace(',', ', ').replace(';', '; ')
         preview_data = preview_data.strip().split('\n')
 
         return preview_data, is_preview_full
