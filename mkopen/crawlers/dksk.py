@@ -57,7 +57,7 @@ def crawl_details(url):
     sleep(random() * 0.5 + 0.5)
     content = rq.get(url).content
     doc = fromstring(content)
-    tables = doc.cssselect('table')
+    tables = doc.cssselect('table.class')
 
     if len(tables) < 2:
         # no details
@@ -122,4 +122,5 @@ def save(session, catalog_id, data, metadata):
     entry.last_checked = TODAY
 
     session.commit()
-    session.expunge_all()
+
+    return entry_version
