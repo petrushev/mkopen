@@ -1,10 +1,25 @@
 {% extends 'extended_base.html' %}
 
-{% block basemain %}
-  {{diff_table|safe}}
-{% endblock %}
-
 {% block styles %}
   {{ super() }}
   <link rel="stylesheet" href="{{cdn}}/css/diff.css">
+{% endblock %}
+
+{% block basemain %}
+    <p itemprop="headline" >
+    {% for cat in (entry.catalog_id[:-1]) %}
+      {% set catalog_filter = ( entry.catalog_id[:loop.index]|join('/') ) %}
+      <a href="/search?catalog={{url_quote(catalog_filter)}}" >{{cat|e}}</a>
+      {% if not loop.last %}{{'>'}}{% endif %}
+    {% endfor %}
+    </p>
+
+    <h3 itemprop="headline">{{entry.catalog_id[-1]|e}}</h3>
+    [<a href="/entry/{{entry.id|uuid2b64}}" >назад</a>]
+    <hr>
+
+  <p class="col-xs-6 col-sm-6 col-md-6 col-lg-6" >{{prev_date|date_format}}</p>
+  <p class="col-xs-6 col-sm-6 col-md-6 col-lg-6" >{{cur_date|date_format}}</p>
+
+  {{diff_table|safe}}
 {% endblock %}

@@ -324,6 +324,9 @@ class DiffView(ActionView):
             raise NotFound
 
         diff = compare(prev_version.data, cur_version.data)
-        self.view['diff_table'] = diff
+        self.view.update({'diff_table': diff,
+                          'entry': entry,
+                          'prev_date': prev_version.updated,
+                          'cur_date': cur_version.updated})
 
         return render_template('diff.html', **self.view)
