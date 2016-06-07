@@ -1,5 +1,13 @@
 {% extends 'extended_base.html' %}
 
+{% block title %}{{entry.catalog_id[-1]|e}} - споредба - {{super()}}{% endblock %}
+
+{% block meta_desc %}
+Споредба верзии на сет на отворени податоци:
+{{entry.catalog_id[-1]|e}}
+  {{super()}}
+{% endblock %}
+
 {% block styles %}
   {{ super() }}
   <link rel="stylesheet" href="{{cdn}}/css/diff.css">
