@@ -264,7 +264,7 @@ class EntryView(ActionView):
         if version.metadata['file_type'] != 'csv':
             return None, None
 
-        preview_data = g.dbsession.query(func.substring(Version.data, 1, 13000),
+        preview_data = g.dbsession.query(func.substring(Version.data, 1, 18000),
                                          func.length(Version.data))\
                         .filter(Version.id==version.id).one()
         preview_data, version_length = preview_data
@@ -273,7 +273,11 @@ class EntryView(ActionView):
         is_preview_full = ( len(preview_data) == version_length )
 
         if not is_preview_full:
-            last_return = preview_data.rindex('\n')
+            try:
+                last_return = preview_data.rindex('\n')
+            except ValueError:
+                # too long preview
+                return None, None
             preview_data = preview_data[:last_return]
 
         encoding = chardet.detect(preview_data)['encoding']
