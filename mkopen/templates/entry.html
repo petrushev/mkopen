@@ -40,8 +40,9 @@
           <td>
             <a href="/download/{{version.id|uuid2b64}}" title="преземи">
             <span>
+              {{ version.size|file_size_format }}
               {% if version.metadata.file_type %}
-                .{{version.metadata.file_type|e}}
+                {{version.metadata.file_type|e}}
               {% else %}
                 преземи
               {% endif %}
