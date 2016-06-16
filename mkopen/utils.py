@@ -78,6 +78,15 @@ def date_format(date_, format_='%d %B, %Y', locale_name='mk_MK.UTF-8'):
         formated = date_.strftime(format_).decode('utf-8')
     return formated
 
+def file_size_format(size):
+    if size < 1024:
+        return '%d B' % size
+    size = size * 1.0 / 1024
+    if size < 1024:
+        return '%.02f KB' % size
+    size = size / 1024
+    return '%.02f MB' % size
+
 
 class SearchQuery(object):
 

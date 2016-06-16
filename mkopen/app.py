@@ -11,7 +11,7 @@ from werkzeug.urls import url_quote_plus
 from werkzeug.datastructures import ImmutableMultiDict
 
 from mkopen.views import IndexView, SearchView, EntryView, DiffView
-from mkopen.utils import uuid2b64, is_json, date_format
+from mkopen.utils import uuid2b64, is_json, date_format, file_size_format
 from mkopen.db.mappers import sessionmaker
 
 
@@ -43,11 +43,11 @@ def create_app():
                                   url_quote=url_quote_plus,
                                   DATE_FORMAT=DATE_FORMAT,
                                   NAIVE_DATETIME_FORMAT=NAIVE_DATETIME_FORMAT)
-    app_.jinja_env.filters.update(date_format=date_format)
     app_.jinja_env.filters.update(json=json.dumps,
                                   domain=lambda url: urlparse(url).netloc,
-                                  uuid2b64=uuid2b64)
-
+                                  uuid2b64=uuid2b64,
+                                  date_format=date_format,
+                                  file_size_format=file_size_format)
     for path, view in routes:
         app_.add_url_rule(path, view_func=view)
 
