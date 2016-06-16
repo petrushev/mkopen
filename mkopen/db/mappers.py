@@ -1,5 +1,6 @@
 from sqlalchemy.engine import create_engine
-from sqlalchemy.orm import relationship, backref, deferred
+from sqlalchemy.orm import relationship, backref, deferred, column_property
+from sqlalchemy.sql.expression import func
 
 from mkopen.db import models, reflect
 
@@ -23,7 +24,8 @@ def sessionmaker(dbconfig):
     })
 
     mappers['Version'].add_properties({
-        'data': deferred(tables['version'].c['data'])
+        'data': deferred(tables['version'].c['data']),
+        'size': column_property(func.length(tables['version'].c['data']))
     })
 
     Session.class_.mappers = mappers
