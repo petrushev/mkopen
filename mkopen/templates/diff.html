@@ -26,8 +26,10 @@
     [<a href="/entry/{{entry.id|uuid2b64}}" >назад</a>]
     <hr>
 
-  <p class="col-xs-6 col-sm-6 col-md-6 col-lg-6" >{{prev_date|date_format}}</p>
-  <p class="col-xs-6 col-sm-6 col-md-6 col-lg-6" >{{cur_date|date_format}}</p>
+  <p><b>
+    <span style="width: 525px; float: left; padding-left: 40px;" >{{prev_date|date_format}}</span>
+    <span>{{cur_date|date_format}}</span>
+  </b></p>
 
   {{diff_table|safe}}
 {% endblock %}

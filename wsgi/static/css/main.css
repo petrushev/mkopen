@@ -11,5 +11,5 @@ label {
     background-color: #f9f9f9;
 }
 
-td {padding-right: 7px;}
+td {padding-left: 3px; padding-right: 3px;}
 .monofont {font-family: Consolas, Lucida Console, monospace;}
