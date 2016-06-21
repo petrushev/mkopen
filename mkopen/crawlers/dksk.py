@@ -8,10 +8,12 @@ import csv
 from datetime import datetime
 from time import sleep
 from random import random
+import locale
 
 from lxml.html import fromstring
 
 from mkopen.db.models import Data, Version, catalog2uuid, data2uuid
+from mkopen.utils import setlocale
 
 TODAY = datetime.utcnow().date()
 CATALOG_PREFIX = u"Државна комисија за спречување корупција"
@@ -22,8 +24,9 @@ def main(session):
     cur_page = 1
 
     final_page = False
-    while not final_page:
+    collected_catalogs = []
 
+    while not final_page:
         start = BASE + '/index.php?search=%d' % cur_page
         print 'page:', cur_page
 
@@ -40,6 +43,7 @@ def main(session):
             catalog, content = crawl_details(url)
 
             if catalog is not None and content is not None:
+                collected_catalogs.append(','.join(reversed(catalog)))
                 catalog = (CATALOG_PREFIX, ) + catalog
                 metadata = {'url': url,
                             'page_url': start,
@@ -51,6 +55,15 @@ def main(session):
 
         final_page = (len(next_) == 0)
         cur_page = cur_page +  1
+
+    with setlocale():
+        collected_catalogs.sort(cmp=locale.strcoll)
+
+    # save active pages
+    catalog = (CATALOG_PREFIX, u'Анкетни листови', u'Активни')
+    content = ('\n'.join(collected_catalogs)).encode('utf-8')
+    metadata = {'file_type': 'csv'}
+    save(session, catalog, content, metadata)
 
 def crawl_details(url):
 
