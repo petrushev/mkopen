@@ -22,7 +22,7 @@ DATA_ID = catalog2uuid(AGG_CATALOG_ID)
 def main(session):
     q = session.query(Data)\
                .filter(Data.catalog_id[1] == CATALOG_PREFIX,
-                       Data.catalog_id != AGG_CATALOG_ID)\
+                       Data.catalog_id[2] != u'Анкетни листови')\
                .order_by(Data.catalog_id[4]).all()
 
     writer_hnd = StringIO()
