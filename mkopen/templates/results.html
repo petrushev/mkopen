@@ -8,14 +8,14 @@
     {% block headline %}{% endblock %}
     <div id="entries" >
        {% for catalog_id, entries in data %}
-	    <div class="catalog_entry {% if loop.index % 2 == 0 %} odd {% endif %}"
+	    <div class="catalog_entry "
              itemscope itemtype="http://schema.org/DataCatalog" >
 
              <meta itemprop="url" content="/catalog/{{catalog_id|join('/')}}" />
 
-	      <b itemprop="headline">{{macros.catalog_crumb(url_query, query, catalog_id)}}</b>
+	      <b itemprop="headline" >{{macros.catalog_crumb(url_query, query, catalog_id)}}</b>
 	      {% for entry in entries %}
-	      <div class="data_entry"
+	      <div class="data_entry "
 	           itemscope itemprop="dataset" itemtype="http://schema.org/Dataset" >
 	        {{macros.data_entry(url_query, entry)}}
 	      </div>

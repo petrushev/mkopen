@@ -8,11 +8,11 @@
 {% endmacro %}
 
 {% macro catalog_crumb(url_query, query, catalog_id) %}
-<p class="small" >
+<p class="small odd" >
   {% for cat in catalog_id %}
     {% set catalog_filter = ( catalog_id[:loop.index]|join('/') ) %}
     {% if query %}
-      <a href="/search/{{url_quote(query)}}?{{url_query.set('catalog', catalog_filter).delete('page')}}" >{{cat|e}}</a>
+      <a href="/search/{{url_quote(query)|replace('+', '%20')}}?{{url_query.set('catalog', catalog_filter).delete('page')}}" >{{cat|e}}</a>
     {% else %}
       <a href="/catalog/{{catalog_filter}}" >{{cat|e}}</a>
     {% endif %}
@@ -26,7 +26,7 @@
   {% set catalog_filter = catalog_id|join('/') %}
   {% set catalog_title = catalog_id|join(' > ')|e %}
   {% if query != '' and query is not none %}
-    <a href="/search/{{url_quote(query)}}?{{url_query.set('catalog', catalog_filter).delete('query').delete('page')}}" title="{{catalog_title}}">{{catalog_id[-1]|e}}</a>
+    <a href="/search/{{url_quote(query)|replace('+', '%20')}}?{{url_query.set('catalog', catalog_filter).delete('query').delete('page')}}" title="{{catalog_title}}">{{catalog_id[-1]|e}}</a>
   {% else %}
     <a href="/catalog/{{catalog_filter}}{% if url_query.empty %}?{{url_query.delete('catalog').delete('page')}}{% endif %}" title="{{catalog_title}}">{{catalog_id[-1]|e}}</a>
   {% endif %}

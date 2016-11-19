@@ -9,6 +9,8 @@ label {
 
 .odd {
     background-color: #f9f9f9;
+    padding-top: 3px;
+    padding-bottom: 3px;
 }
 
 td {padding-left: 3px; padding-right: 3px;}
