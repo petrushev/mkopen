@@ -37,4 +37,9 @@ $(document).ready(function(){
     $('span#orig_url').show();
     return false;
   });
+
+
+  $("button#search_submit").click(function() {
+    $(this).parents('form').submit();
+  });
 });
