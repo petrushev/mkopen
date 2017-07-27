@@ -17,7 +17,7 @@ from sqlalchemy.sql.expression import func, and_
 import chardet
 
 from mkopen.db.models import Version, Data, combine_catalogs
-from mkopen.utils import b642uuid, SearchQuery, compare, uuid2b64
+from mkopen.utils import b642uuid, SearchQuery, compare2, uuid2b64
 
 from mkopen.crawlers.dksk import CATALOG_PREFIX as DKSK_CAT
 from mkopen.crawlers.makstat import CATALOG_PREFIX as MAKSTAT_CAT
@@ -327,7 +327,8 @@ class DiffView(ActionView):
             # comparing the first version
             raise NotFound
 
-        diff = compare(prev_version.data, cur_version.data)
+        diff = compare2(prev_version, cur_version)
+
         self.view.update({'diff_table': diff,
                           'entry': entry,
                           'prev_date': prev_version.updated,

@@ -5,9 +5,12 @@ import locale
 import threading
 from contextlib import contextmanager
 
-
+from sqlalchemy.sql.expression import func
+from sqlalchemy.orm import aliased
 from werkzeug.urls import url_encode
 import chardet
+
+from mkopen.db.models import Version
 
 
 diff_fc = difflib.HtmlDiff(wrapcolumn=60).make_table
@@ -61,6 +64,21 @@ def compare(data_1, data_2):
     udata_2 = udata_2.split('\n')
 
     return diff_fc(udata_1, udata_2, context=True, numlines=2)
+
+
+def compare2(version1, version2):
+    session = version1.session
+    V1 = aliased(Version)
+    V2 = aliased(Version)
+    print version1.id, version2.id
+    result = (session
+        .query(func.html_diff(V1.data, V2.data))
+        .filter(V1.id == version1.id, V2.id == version2.id)
+        .one()
+    )
+    result = result[0]
+    return result
+
 
 LOCALE_LOCK = threading.Lock()
 

@@ -78,3 +78,51 @@ CREATE INDEX i_data_catalog ON data USING gin (catalog_id);
 ALTER TABLE ONLY version
     ADD CONSTRAINT fk_version_data FOREIGN KEY (data_id) REFERENCES data(id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
+-- add html_diff (backend) function
+
+drop function html_diff(data_1 bytea, data_2 bytea);
+
+CREATE FUNCTION html_diff(data_1 bytea, data_2 bytea)
+  RETURNS text AS
+$BODY$
+
+try:
+    chardet = SD['chardet']
+except KeyError:
+    import chardet
+    SD['chardet'] = chardet
+
+try:
+    difflib = SD['difflib']
+except KeyError:
+    import difflib
+    SD['difflib'] = difflib
+
+enc_1 = chardet.detect(data_1)['encoding']
+enc_2 = chardet.detect(data_2)['encoding']
+if enc_1 is None and enc_2 is None:
+    return None
+if enc_1 is None or enc_2 is None:
+    # only one is binary
+    return None
+
+try:
+    udata_1 = data_1.decode(enc_1)
+    udata_2 = data_2.decode(enc_2)
+except UnicodeDecodeError:
+    # detected encodings did not work
+    return None
+
+udata_1 = udata_1.split('\n')
+udata_2 = udata_2.split('\n')
+
+diff_fc = difflib.HtmlDiff(wrapcolumn=60).make_table
+diff = diff_fc(udata_1, udata_2, context=True, numlines=2)
+diff = diff.encode('utf-8')
+
+return diff
+
+
+$BODY$
+  LANGUAGE  plpythonu IMMUTABLE
+cost 100;
