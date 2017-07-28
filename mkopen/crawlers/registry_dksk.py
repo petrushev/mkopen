@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 
-#---------- Државна комисија за спречување корупција ----------
+#---------- Регистар на избрани и именувани лица, ДКСК ----------
 
 import requests as rq
-from StringIO import StringIO
-import csv
 from datetime import datetime
 from time import sleep
 from random import random
 import locale
 import json
-
-from lxml.html import fromstring
 
 from mkopen.db.models import Data, Version, catalog2uuid, data2uuid
 from mkopen.utils import setlocale
@@ -45,6 +41,8 @@ def main(session):
                 'terminateElectedUser': False,}),
             timeout=3,
         )
+        sleep(random() * 0.5 + 0.5)
+
 
         data = q.json()['submissions']
 
