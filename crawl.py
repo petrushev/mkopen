@@ -31,6 +31,8 @@ def main():
         from mkopen.crawlers.skopje2014 import main as crawler
     elif crawler_name == 'archive_dksk':
         from mkopen.crawlers.archive_dksk import main as crawler
+    elif crawler_name == 'registry_dksk':
+        from mkopen.crawlers.registry_dksk import main as crawler
 
     else:
         print 'Crawler unknown:', crawler_name

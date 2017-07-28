@@ -261,7 +261,7 @@ class EntryView(ActionView):
         return render_template('entry.html', **self.view)
 
     def _load_preview(self, version):
-        if version.metadata['file_type'] != 'csv':
+        if version.metadata['file_type'] not in ('csv', 'text'):
             return None, None
 
         preview_data = g.dbsession.query(func.substring(Version.data, 1, 18000),
