@@ -1,5 +1,5 @@
 Flask
-SQLAlchemy>=1.0.0
+SQLAlchemy
 requests
 psycopg2
 lxml
