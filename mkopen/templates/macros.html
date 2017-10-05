@@ -32,10 +32,12 @@
   {% endif %}
 {% endmacro %}
 
-{% macro data_entry(url_query, entry) %}
+
+{% macro data_entry(base_url, entry) %}
 <p>
-  <a href="/entry/{{entry.id|uuid2b64}}" ><span itemprop="headline" >{{entry.catalog_id[-1]|e}}</span></a>
-  <meta itemprop="url" content="/entry/{{entry.id|uuid2b64}}">
+  {% set catalog = entry.catalog_id %}
+  <a href="/entry/{{entry.id|uuid2b64}}" ><span itemprop="headline" >{{catalog[-1]|e}}</span></a>
+  <meta itemprop="url" content="{{base_url}}/entry/{{entry.id|uuid2b64}}">
   <meta itemprop="dateModified" content="{{entry.last.updated.strftime(DATE_FORMAT)}}">
   <span class="small">
     [{{entry.last.updated|date_format}}]
@@ -46,8 +48,9 @@
 </p>
 {% endmacro %}
 
-{% macro catalog_desc(catalog) %}
-  {% if catalog[0] == "Државна комисија за спречување корупција" %}
+
+{% macro catalog_desc(catalog) -%}
+  {%- if catalog[0] == "Државна комисија за спречување корупција" -%}
     Анкетни листови
-  {% endif %}
-{% endmacro %}
+  {%- endif -%}
+{%- endmacro %}

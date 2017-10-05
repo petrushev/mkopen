@@ -12,12 +12,14 @@
 {% block main %}
 <div itemscope id="entry" itemprop="dataset" itemtype="http://schema.org/Dataset">
   {% set last_ver = entry.last %}
-  <h3 itemprop="headline">{{entry.catalog_id[-1]|e}}</h3>
+  {% set catalog = entry.catalog_id %}
+  <h3 itemprop="headline">{{catalog[-1]|e}}</h3>
 
   {# microdata #}
   <meta itemprop="dateCreated" content="{{entry.created.strftime(DATE_FORMAT)}}" />
   <meta itemprop="dateModified" content="{{entry.modified.strftime(DATE_FORMAT)}}" />
-  <meta itemprop="url" content="/entry/{{entry.id|uuid2b64}}" />
+  <meta itemprop="url" content="{{base_url}}/entry/{{entry.id|uuid2b64}}" />
+  <meta itemprop="about" content="{{ catalog[-1]|e ~', '~ macros.catalog_desc(catalog) }}" >
 
   <div class="row">
 
@@ -25,15 +27,19 @@
       <p>Историја</p>
       <table>
       {% for version in versions %}
-        <tr itemprop="distribution" itemscope itemtype="http://schema.org/DataDownload">
+        <tr>
           {# microdata #}
-          <meta itemprop="contentUrl" content="/download/{{version.id|uuid2b64}}" />
-          <meta itemprop="version" content="{{loop.revindex}}" />
-          {% if version.metadata.file_type %}
-            {% if version.metadata.file_type == 'csv' %}
-            <meta itemprop="fileFormat" content="text/csv" />
+          <td>
+            <span itemprop="distribution" itemscope itemtype="http://schema.org/DataDownload" >
+            <meta itemprop="contentUrl" content="{{base_url}}/download/{{version.id|uuid2b64}}" />
+            <meta itemprop="version" content="{{loop.revindex}}" />
+            {% if version.metadata.file_type %}
+              {% if version.metadata.file_type == 'csv' %}
+              <meta itemprop="fileFormat" content="text/csv" />
+              {% endif %}
             {% endif %}
-          {% endif %}
+            </span>
+          </td>
 
           <td>{{ version.updated|date_format }}</td>
 
@@ -64,7 +70,7 @@
     <div id="info" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
       <div  itemscope itemtype="http://schema.org/DataCatalog" itemref="entry">
         {% set catalog_filter = ( entry.catalog_id[:-1]|join('/') ) %}
-        <meta itemprop="url" content="/catalog/{{catalog_filter}}" />
+        <meta itemprop="url" content="{{base_url}}/catalog/{{catalog_filter}}" />
 
         <p>Каталог на отворени податоци</p>
         <p itemprop="headline" >
@@ -74,6 +80,17 @@
           {% if not loop.last %}{{'>'}}{% endif %}
         {% endfor %}
         </p>
+
+        <ol itemscope itemtype="http://schema.org/BreadcrumbList">
+          {% for cat in (entry.catalog_id[:-1]) %}
+            {% set catalog_filter = ( entry.catalog_id[:loop.index]|join('/') ) %}
+            <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+              <meta itemprop="item" content="{{base_url}}/search?catalog={{url_quote(catalog_filter)}}">
+              <meta itemprop="name" content="{{cat|e}}" />
+              <meta itemprop="position" content="{{loop.index}}" />
+            </span>
+          {% endfor %}
+        </ol>
 
       </div> {# catalog info #}
       <div id="catalog_info" >

@@ -11,13 +11,13 @@
 	    <div class="catalog_entry "
              itemscope itemtype="http://schema.org/DataCatalog" >
 
-             <meta itemprop="url" content="/catalog/{{catalog_id|join('/')}}" />
+             <meta itemprop="url" content="{{base_url}}/catalog/{{catalog_id|join('/')}}" />
 
 	      <b itemprop="headline" >{{macros.catalog_crumb(url_query, query, catalog_id)}}</b>
 	      {% for entry in entries %}
 	      <div class="data_entry "
 	           itemscope itemprop="dataset" itemtype="http://schema.org/Dataset" >
-	        {{macros.data_entry(url_query, entry)}}
+	        {{macros.data_entry(base_url, entry)}}
 	      </div>
 	      {% endfor %}
 	    </div>

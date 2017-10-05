@@ -52,7 +52,8 @@ class ActionView(View):
         for k, v in request.args.items():
             q = q.set(k, v)
         self.view = {'url_query': q,
-                     'path': request.path}
+                     'path': request.path,
+                     'base_url': request.host_url.rstrip('/')}
 
     def dispatch_request(self, *args, **kwargs):
         action_fc = getattr(self, self.action, None)
