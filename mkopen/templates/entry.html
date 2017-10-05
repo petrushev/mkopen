@@ -85,7 +85,7 @@
           {% for cat in (entry.catalog_id[:-1]) %}
             {% set catalog_filter = ( entry.catalog_id[:loop.index]|join('/') ) %}
             <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-              <meta itemprop="item" content="{{base_url}}/search?catalog={{url_quote(catalog_filter)}}">
+              <meta itemprop="url" content="{{base_url}}/search?catalog={{url_quote(catalog_filter)}}">
               <meta itemprop="name" content="{{cat|e}}" />
               <meta itemprop="position" content="{{loop.index}}" />
             </span>
