@@ -12,6 +12,8 @@ from mkopen.db.models import Data
 
 
 SITEMAP_PATH = path_join(dirname(__file__), 'wsgi', 'static')
+PROTOCOL = environ['PROTOCOL']
+HOST = environ['OPENSHIFT_APP_DNS']
 
 Session = sessionmaker(
     {'url': '%s/%s' % (environ['OPENSHIFT_POSTGRESQL_DB_URL'], environ['PGDATABASE']),
@@ -44,21 +46,20 @@ def gen_catalogs(session):
 
     for catalog_param in all_catalogs:
         url_xml = SubElement(doc, "url")
-        SubElement(url_xml, 'loc').text = \
-           'https://%s/catalog/%s' % (environ['OPENSHIFT_APP_DNS'],
-                                      catalog_param)
+        SubElement(url_xml, 'loc').text = '%s://%s/catalog/%s' % (
+            PROTOCOL, HOST, catalog_param)
         SubElement(url_xml, 'changefreq').text = 'weekly'
         SubElement(url_xml, 'priority').text = '0.7'
 
     # index
     url_xml = SubElement(doc, "url")
-    SubElement(url_xml, 'loc').text = 'https://%s' % (environ['OPENSHIFT_APP_DNS'],)
+    SubElement(url_xml, 'loc').text = '%s://%s' % (PROTOCOL, HOST,)
     SubElement(url_xml, 'changefreq').text = 'daily'
     SubElement(url_xml, 'priority').text = '0.9'
 
-
     with open(path_join(SITEMAP_PATH, 'catalog.xml'), 'wb') as f:
         f.write(xml_to_string(doc, encoding='utf-8', pretty_print=True))
+
 
 def gen_entries(session):
     doc = Element("urlset", {"xmlns":"http://www.sitemaps.org/schemas/sitemap/0.9"})
@@ -68,9 +69,7 @@ def gen_entries(session):
         hash_ = uuid2b64(entry.id)
 
         url_xml = SubElement(doc, "url")
-        SubElement(url_xml, 'loc').text = \
-           'https://%s/entry/%s' % (environ['OPENSHIFT_APP_DNS'],
-                                    hash_)
+        SubElement(url_xml, 'loc').text = '%s://%s/entry/%s' % (PROTOCOL, HOST, hash_)
         SubElement(url_xml, 'changefreq').text = 'weekly'
         SubElement(url_xml, 'priority').text = '0.8'
 
