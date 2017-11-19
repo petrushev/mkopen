@@ -1,26 +1,34 @@
 # -*- coding: utf-8 -*-
 
 #--------------- Завод за статистика -----------
+# -- version 2
+# ------ (support for px format)
+
 
 import requests as rq
 import json
 from datetime import datetime
 from time import sleep
 from random import random
+from StringIO import StringIO
+
+import pandas as pd
 
 from mkopen.db.models import Data, Version, catalog2uuid, data2uuid
+from .px_reader import Px, build_dataframe
 
 START_URL = 'http://makstat.stat.gov.mk/PXWeb/api/v1/mk/MakStat/'
 
 CATALOG_PREFIX = u"Завод за статистика"
 POST_BODY = json.dumps({
     "query": [],
-    "response": {"format": "csv"}
+    "response": {"format": "px"}
 })
 
 TODAY = datetime.utcnow().date()
 
 cat_descriptions = {}
+
 
 def main(session):
     for item in rq.get(START_URL).json():
@@ -77,7 +85,7 @@ def crawl_file(session, file_id, description, cat_path):
         'file_type': 'csv'
     }
 
-    sleep(random() * 2 + 1.5)
+    sleep(random() * 1.2 + .3)
     q = rq.post(url,
                 headers={'Content-Type': 'application/json'},
                 data=POST_BODY)
@@ -86,6 +94,29 @@ def crawl_file(session, file_id, description, cat_path):
         return
 
     data = q.content
+
+    # try to convert to utf8
+    try:
+        data = data.decode('cp1251').encode('utf-8')
+    except Exception:
+        pass
+
+    data = data.replace('\r\n', '\n')
+
+    df = build_dataframe(Px(StringIO(data)))
+    while type(df) is pd.DataFrame:
+        df = df.stack()
+
+    df = df.unstack()
+    if len(df.columns) > 10:
+        df = df.stack()
+        df.name = 'value'
+
+    df = df.reset_index()
+
+    fh = StringIO()
+    df.to_csv(fh, index=False)
+    data = fh.getvalue()
 
     # check for changes
     data_hash = data2uuid(data)

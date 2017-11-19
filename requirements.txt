@@ -1,7 +1,8 @@
-Flask
-SQLAlchemy
-requests
-psycopg2
-lxml
 chardet
 cssselect
+Flask
+lxml
+pandas
+psycopg2
+requests
+SQLAlchemy
