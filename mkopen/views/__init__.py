@@ -249,7 +249,7 @@ class EntryView(ActionView):
             return render_template('error/404.html', **self.view)
 
         versions = entry.versions.order_by(Version.updated.desc()).all()
-        if len(versions):
+        if len(versions) == 0:
             g.dbsession.delete(entry)
             g.dbsession.commit()
             return render_template('error/404.html', **self.view)
