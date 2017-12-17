@@ -250,8 +250,8 @@ class EntryView(ActionView):
 
         versions = entry.versions.order_by(Version.updated.desc()).all()
         if len(versions):
-            self.session.delete(entry)
-            self.session.commit()
+            g.dbsession.delete(entry)
+            g.dbsession.commit()
             return render_template('error/404.html', **self.view)
 
         # load preview
