@@ -245,8 +245,14 @@ class EntryView(ActionView):
     def index(self, data_b64):
         uuid = b642uuid(data_b64)
         entry = Data.load(g.dbsession, id=uuid)
+        if entry is None:
+            return render_template('error/404.html', **self.view)
 
         versions = entry.versions.order_by(Version.updated.desc()).all()
+        if len(versions):
+            self.session.delete(entry)
+            self.session.commit()
+            return render_template('error/404.html', **self.view)
 
         # load preview
         last = versions[0]
